@@ -6,6 +6,7 @@ import { FanucSymbolProvider } from './symbols';
 import { ControllerTreeProvider } from './controllerTree';
 import { originOf, registerCommands } from './commands';
 import { FanucDocumentFormatter, FanucOnTypeFormatter } from './format';
+import { registerLabelFeatures } from './labelView';
 
 const SELECTOR: vscode.DocumentSelector = { language: 'fanuc-ls' };
 
@@ -56,6 +57,8 @@ export function activate(context: vscode.ExtensionContext): void {
 		vscode.languages.registerOnTypeFormattingEditProvider(SELECTOR, new FanucOnTypeFormatter(), '\n'),
 		vscode.languages.registerDocumentFormattingEditProvider(SELECTOR, new FanucDocumentFormatter())
 	);
+
+	registerLabelFeatures(context);
 
 	// --- Sidepanel -----------------------------------------------------------
 

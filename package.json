@@ -31,7 +31,8 @@
   "main": "./out/extension.js",
   "activationEvents": [
     "onLanguage:fanuc-ls",
-    "onView:fanucLs.controllers"
+    "onView:fanucLs.controllers",
+    "onView:fanucLs.labels"
   ],
   "contributes": {
     "languages": [
@@ -99,6 +100,11 @@
           "id": "fanucLs.controllers",
           "name": "Controller",
           "contextualTitle": "FANUC Controller"
+        },
+        {
+          "id": "fanucLs.labels",
+          "name": "Sprungmarken",
+          "contextualTitle": "FANUC Sprungmarken"
         }
       ]
     },
@@ -231,6 +237,35 @@
         "title": "Klon: Änderungen auf Controller übertragen",
         "category": "FANUC",
         "icon": "$(cloud-upload)"
+      },
+      {
+        "command": "fanucLs.labels.reveal",
+        "title": "Sprungmarke anzeigen",
+        "category": "FANUC"
+      },
+      {
+        "command": "fanucLs.labels.insert",
+        "title": "Sprungmarke einfügen",
+        "category": "FANUC",
+        "icon": "$(add)"
+      },
+      {
+        "command": "fanucLs.labels.renumberAll",
+        "title": "Alle Sprungmarken neu nummerieren",
+        "category": "FANUC",
+        "icon": "$(list-ordered)"
+      },
+      {
+        "command": "fanucLs.labels.editComment",
+        "title": "Kommentar der Sprungmarke bearbeiten",
+        "category": "FANUC",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "fanucLs.labels.changeNumber",
+        "title": "Nummer der Sprungmarke ändern",
+        "category": "FANUC",
+        "icon": "$(symbol-numeric)"
       }
     ],
     "menus": {
@@ -249,6 +284,16 @@
           "command": "fanucLs.clone.showChanges",
           "when": "view == fanucLs.controllers",
           "group": "navigation@3"
+        },
+        {
+          "command": "fanucLs.labels.insert",
+          "when": "view == fanucLs.labels",
+          "group": "navigation@1"
+        },
+        {
+          "command": "fanucLs.labels.renumberAll",
+          "when": "view == fanucLs.labels",
+          "group": "navigation@2"
         }
       ],
       "view/item/context": [
@@ -306,6 +351,26 @@
           "command": "fanucLs.clone.create",
           "when": "view == fanucLs.controllers && viewItem == controller",
           "group": "2_transfer@1"
+        },
+        {
+          "command": "fanucLs.labels.editComment",
+          "when": "view == fanucLs.labels && viewItem == label",
+          "group": "inline@1"
+        },
+        {
+          "command": "fanucLs.labels.changeNumber",
+          "when": "view == fanucLs.labels && viewItem == label",
+          "group": "inline@2"
+        },
+        {
+          "command": "fanucLs.labels.editComment",
+          "when": "view == fanucLs.labels && viewItem == label",
+          "group": "1_edit@1"
+        },
+        {
+          "command": "fanucLs.labels.changeNumber",
+          "when": "view == fanucLs.labels && viewItem =~ /^label/",
+          "group": "1_edit@2"
         }
       ],
       "editor/title": [
@@ -335,6 +400,11 @@
           "command": "fanucLs.compareWithController",
           "when": "resourceLangId == fanuc-ls && resourceScheme == file",
           "group": "1_modification@12"
+        },
+        {
+          "command": "fanucLs.labels.insert",
+          "when": "resourceLangId == fanuc-ls",
+          "group": "1_modification@13"
         }
       ],
       "explorer/context": [
@@ -391,6 +461,26 @@
         {
           "command": "fanucLs.compareRemoteWithLocal",
           "when": "false"
+        },
+        {
+          "command": "fanucLs.labels.reveal",
+          "when": "false"
+        },
+        {
+          "command": "fanucLs.labels.editComment",
+          "when": "editorLangId == fanuc-ls"
+        },
+        {
+          "command": "fanucLs.labels.changeNumber",
+          "when": "editorLangId == fanuc-ls"
+        },
+        {
+          "command": "fanucLs.labels.insert",
+          "when": "editorLangId == fanuc-ls"
+        },
+        {
+          "command": "fanucLs.labels.renumberAll",
+          "when": "editorLangId == fanuc-ls"
         }
       ]
     },

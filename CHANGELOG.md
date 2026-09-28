@@ -6,6 +6,7 @@
 - Vergleich lokale Datei ↔ Controller im Diff-Editor, in beide Richtungen (#8)
 - Controller klonen: Geräte in einen Ordner laden, Änderungen anzeigen und gezielt zurückübertragen, mit Konfliktprüfung gegen Änderungen auf der Steuerung (#10)
 - CALL/RUN-Ziele werden im Hintergrund gegen die Programmliste der Steuerung geprüft (`fanucLs.validation.checkCallTargetsOnController`) (#9)
+- Sprungmarken: eigene Ansicht mit Sprüngen je Label, Einfügen, Kommentar bearbeiten, Nummer ändern, alle neu nummerieren; im Editor Gehe zu Definition, Verweise, Umbenennen (F2), Hover, Hervorhebung, Vervollständigung (#7)
 - Dateien in einem Klon kennen ihre Herkunft auch ohne gemerkten Download (Upload, Vergleich, CALL-Prüfung)
 
 ## 0.3.0

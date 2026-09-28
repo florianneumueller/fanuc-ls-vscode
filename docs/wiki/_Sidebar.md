@@ -6,6 +6,7 @@
 - [[Syntaxhighlighting und Outline]]
 - [[Syntaxprüfung]]
 - [[Snippets und Zeilennummern]]
+- [[Sprungmarken]]
 - [[Controller und FTP]]
 - [[Einstellungen]]
 - [[Befehle]]
