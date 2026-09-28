@@ -22,6 +22,12 @@
 | `fanucLs.format.autoNumber` | `true` | Zeilennummer beim Zeilenumbruch im `/MN`-Block automatisch setzen |
 | `fanucLs.format.normalizeSpacing` | `false` | Abstand hinter dem Doppelpunkt vereinheitlichen |
 
+## Copilot
+
+| Einstellung | Standard | Bedeutung |
+|---|---|---|
+| `fanucLs.copilot.skill` | `true` | Agent Skill `fanuc-tp-programmierung` für GitHub Copilot bereitstellen (VS Code ≥ 1.109), siehe [[Copilot-Skill]] |
+
 ## Syntaxprüfung
 
 | Einstellung | Standard | Bedeutung |

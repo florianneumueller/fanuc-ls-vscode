@@ -1,5 +1,9 @@
 # Änderungen
 
+## Unveröffentlicht
+
+- GitHub-Copilot-Agent-Skill `fanuc-tp-programmierung` wird mit der Extension installiert (`chatSkills`, VS Code ≥ 1.109); abschaltbar über `fanucLs.copilot.skill`
+
 ## 0.2.0
 
 - Automatische Zeilennummern: beim Beginn einer neuen Zeile im `/MN`-Block wird die nächste Nummer gesetzt und der Rest nachnummeriert (`editor.formatOnType`)

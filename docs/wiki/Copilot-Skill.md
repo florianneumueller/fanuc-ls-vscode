@@ -22,13 +22,18 @@ Alle Beispielprogramme im Skill laufen ohne Befund durch die Syntaxprüfung der 
 
 ## Verwenden
 
+**Mit der Extension (empfohlen):** Der Skill ist im VSIX enthalten und wird über den Contribution Point `chatSkills` automatisch bei Copilot registriert. Mit der Extension ist er also schon installiert, in jedem Projekt, ohne Kopieren. Voraussetzungen:
+- VS Code **1.109 oder neuer** mit GitHub Copilot. Ältere Versionen ignorieren den Skill, alle anderen Funktionen der Extension laufen trotzdem.
+- Chat im Modus **Agent**.
+- Abschalten lässt er sich über die Einstellung `fanucLs.copilot.skill`.
+
 **In diesem Repository:** Der Skill wird automatisch gefunden, sobald Copilot im Agent-Modus arbeitet:
-- VS Code: Chat im Modus *Agent*. Ggf. in den Einstellungen `chat.useAgentSkills` aktivieren.
+- VS Code: Chat im Modus *Agent*
 - Copilot CLI und Copilot Cloud Agent
 
 Copilot lädt den Skill selbst, wenn es um FANUC-Programme geht. Gezielt aufrufen lässt er sich im Chat mit `/fanuc-tp-programmierung`.
 
-**In den eigenen Roboterprojekten:** Die Roboterprogramme liegen meist in einem anderen Ordner oder Repository. Dafür gibt es zwei Wege:
+**Ohne die Extension** (z. B. für die Copilot CLI oder den Cloud Agent in einem Roboter-Repository) den Ordner kopieren:
 
 | Weg | Ziel | Wirkung |
 |---|---|---|

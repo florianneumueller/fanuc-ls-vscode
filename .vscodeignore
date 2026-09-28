@@ -10,3 +10,4 @@ node_modules/.bin/**
 .github/**
 package-lock.json
 docs/**
+!.github/skills/**

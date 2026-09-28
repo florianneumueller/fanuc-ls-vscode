@@ -66,6 +66,12 @@
         "path": "./snippets/fanuc-ls.json"
       }
     ],
+    "chatSkills": [
+      {
+        "path": "./.github/skills/fanuc-tp-programmierung/SKILL.md",
+        "when": "config.fanucLs.copilot.skill"
+      }
+    ],
     "configurationDefaults": {
       "[fanuc-ls]": {
         "editor.insertSpaces": true,
@@ -402,6 +408,11 @@
           "type": "boolean",
           "default": false,
           "markdownDescription": "Beim Nummerieren auch den Abstand hinter dem Doppelpunkt vereinheitlichen: Bewegungsbefehle direkt anschließend, alle anderen Anweisungen mit zwei Leerzeichen."
+        },
+        "fanucLs.copilot.skill": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Den mitgelieferten Agent Skill `fanuc-tp-programmierung` für GitHub Copilot (Agent-Modus) bereitstellen. Erfordert VS Code 1.109 oder neuer."
         },
         "fanucLs.validation.enable": {
           "type": "boolean",
