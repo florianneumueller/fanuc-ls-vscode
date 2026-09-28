@@ -13,5 +13,5 @@
 
 **Projekt**
 - [[Entwicklung und Release]]
-- [Issues](https://github.com/florianneumueller/fanuc-ls-vscode/issues)
-- [Releases](https://github.com/florianneumueller/fanuc-ls-vscode/releases)
+- [Issues](https://github.com/frontline-networks/fanuc-ls-vscode/issues)
+- [Releases](https://github.com/frontline-networks/fanuc-ls-vscode/releases)

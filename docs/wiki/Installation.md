@@ -2,7 +2,7 @@
 
 ## Variante A: fertiges VSIX (empfohlen)
 
-1. Unter [Releases](https://github.com/florianneumueller/fanuc-ls-vscode/releases) die neueste Datei `fanuc-ls-<version>.vsix` herunterladen.
+1. Unter [Releases](https://github.com/frontline-networks/fanuc-ls-vscode/releases) die neueste Datei `fanuc-ls-<version>.vsix` herunterladen.
 2. In VS Code: **Erweiterungen** (`Strg+Umschalt+X`) → Menü `…` oben rechts → **Install from VSIX…** / **Aus VSIX installieren…** → Datei wählen.
 
    Alternativ auf der Kommandozeile:
@@ -18,7 +18,7 @@ Zwischenstände ohne Release gibt es als Artefakt `fanuc-ls-vsix` an jedem Lauf 
 ## Variante B: aus dem Quellcode
 
 ```bash
-git clone https://github.com/florianneumueller/fanuc-ls-vscode.git
+git clone https://github.com/frontline-networks/fanuc-ls-vscode.git
 cd fanuc-ls-vscode
 npm install
 npm run compile

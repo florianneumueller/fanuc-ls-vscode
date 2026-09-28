@@ -7,7 +7,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/florianneumueller/fanuc-ls-vscode.git"
+    "url": "https://github.com/frontline-networks/fanuc-ls-vscode.git"
   },
   "engines": {
     "vscode": "^1.85.0"

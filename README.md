@@ -1,6 +1,6 @@
 # FANUC TP (LS) — VS Code Extension
 
-📖 **Dokumentation mit Screenshots:** [Wiki](https://github.com/florianneumueller/fanuc-ls-vscode/wiki)
+📖 **Dokumentation mit Screenshots:** [Wiki](https://github.com/frontline-networks/fanuc-ls-vscode/wiki)
 
 Unterstützung für FANUC-TP-Programme im ASCII-Listing-Format (`.ls`): Syntaxhighlighting, Snippets, Syntaxprüfung und ein Sidepanel für den FTP-Dateitransfer zur Robotersteuerung.
 

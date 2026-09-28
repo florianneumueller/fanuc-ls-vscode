@@ -42,7 +42,7 @@ Dann in VS Code `F5` drücken, damit der *Extension Development Host* startet. `
 2. Entweder:
    - **Actions → Build VSIX → Run workflow** mit Häkchen bei **release**. Der Tag `v<version>` wird automatisch angelegt.
    - oder lokal `git tag v0.3.0 && git push origin v0.3.0`. Der Tag muss zur Version passen.
-3. Das Release mit angehängtem VSIX erscheint unter [Releases](https://github.com/florianneumueller/fanuc-ls-vscode/releases).
+3. Das Release mit angehängtem VSIX erscheint unter [Releases](https://github.com/frontline-networks/fanuc-ls-vscode/releases).
 
 ## Wiki pflegen
 
@@ -52,4 +52,4 @@ Dateinamen werden zu Seitentiteln: `-` wird im Titel zum Leerzeichen. Links zwis
 
 ## Issues
 
-Bugs und Ideen werden als [Issues](https://github.com/florianneumueller/fanuc-ls-vscode/issues) mit Labels (`bug`, `enhancement`, `bereich: …`) verwaltet. Die Labels sind in `.github/labels.yml` definiert.
+Bugs und Ideen werden als [Issues](https://github.com/frontline-networks/fanuc-ls-vscode/issues) mit Labels (`bug`, `enhancement`, `bereich: …`) verwaltet. Die Labels sind in `.github/labels.yml` definiert.

@@ -26,4 +26,4 @@ Die Extension macht VS Code zum Editor für FANUC-TP-Programme im ASCII-Listing-
 
 ## Fehler melden / Ideen
 
-Bugs und Feature-Ideen bitte als [Issue](https://github.com/florianneumueller/fanuc-ls-vscode/issues/new/choose) anlegen. Dafür gibt es Formulare für *Bug melden* und *Feature-Idee*.
+Bugs und Feature-Ideen bitte als [Issue](https://github.com/frontline-networks/fanuc-ls-vscode/issues/new/choose) anlegen. Dafür gibt es Formulare für *Bug melden* und *Feature-Idee*.
