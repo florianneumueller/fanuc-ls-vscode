@@ -22,7 +22,7 @@ code --install-extension fanuc-ls-0.2.0.vsix
 
 ### Automatischer Build (GitHub Actions)
 
-Die Pipeline `.github/workflows/build.yml` baut bei jedem Push auf `main`, bei Pull Requests und manuell (*Actions → Build VSIX → Run workflow*) ein VSIX und hängt es als Artefakt `fanuc-ls-vsix` an den Workflow-Lauf. Wird ein Tag `v*` gepusht (z. B. `git tag v0.2.0 && git push origin v0.2.0`), wird zusätzlich ein GitHub-Release mit dem VSIX angelegt.
+Die Pipeline `.github/workflows/build.yml` baut bei jedem Push auf `main`, bei Pull Requests und manuell (*Actions → Build VSIX → Run workflow*) ein VSIX und hängt es als Artefakt `fanuc-ls-vsix` an den Workflow-Lauf. Ein GitHub-Release mit dem VSIX entsteht entweder durch Push eines Tags `v*` (z. B. `git tag v0.2.0 && git push origin v0.2.0`; der Tag muss zur Version in `package.json` passen) oder durch manuellen Start des Workflows mit Häkchen bei *release* — dann wird der Tag `v<version>` aus `package.json` automatisch angelegt. Vor jedem neuen Release die `version` in `package.json` erhöhen.
 
 Im Ordner `examples/` liegt ein vollständiges Beispielprogramm zum Testen.
 

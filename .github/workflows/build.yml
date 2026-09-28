@@ -6,6 +6,11 @@ on:
     tags: ['v*']
   pull_request:
   workflow_dispatch:
+    inputs:
+      release:
+        description: 'GitHub-Release mit Tag v<version aus package.json> anlegen'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -33,10 +38,16 @@ jobs:
           name: fanuc-ls-vsix
           path: '*.vsix'
 
-      - name: GitHub Release anlegen (nur bei Tag v*)
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: GitHub Release anlegen (Tag v* oder manuell mit release=true)
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          mv fanuc-ls-${{ github.sha }}.vsix fanuc-ls-${GITHUB_REF_NAME#v}.vsix
-          gh release create "$GITHUB_REF_NAME" fanuc-ls-*.vsix --generate-notes
+          VERSION=$(node -p "require('./package.json').version")
+          TAG="v$VERSION"
+          if [[ "$GITHUB_REF" == refs/tags/v* && "$GITHUB_REF_NAME" != "$TAG" ]]; then
+            echo "::error::Tag $GITHUB_REF_NAME passt nicht zur package.json-Version $VERSION"
+            exit 1
+          fi
+          mv fanuc-ls-${{ github.sha }}.vsix fanuc-ls-$VERSION.vsix
+          gh release create "$TAG" fanuc-ls-$VERSION.vsix --target "$GITHUB_SHA" --title "$TAG" --generate-notes
