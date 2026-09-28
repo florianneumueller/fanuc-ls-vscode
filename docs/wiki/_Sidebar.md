@@ -10,6 +10,7 @@
 - [[Einstellungen]]
 - [[Befehle]]
 - [[Praxishinweise]]
+- [[Copilot-Skill]]
 
 **Projekt**
 - [[Entwicklung und Release]]

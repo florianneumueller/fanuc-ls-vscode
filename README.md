@@ -28,6 +28,10 @@ Die Pipeline `.github/workflows/build.yml` baut bei jedem Push auf `main`, bei P
 
 Im Ordner `examples/` liegt ein vollständiges Beispielprogramm zum Testen.
 
+### GitHub Copilot Skill
+
+Unter `.github/skills/fanuc-tp-programmierung/` liegt ein Agent Skill, mit dem GitHub Copilot (Agent-Modus in VS Code, Copilot CLI, Cloud Agent) FANUC-TP-Programme im `.ls`-Format schreibt, ändert und prüft. Er enthält eine Befehlsreferenz, geprüfte Beispielprogramme und eine Vorlage. Für eigene Roboterprojekte den Ordner nach `~/.copilot/skills/` oder in das `.github/skills/` des Projekts kopieren. Details im [Wiki](https://github.com/frontline-networks/fanuc-ls-vscode/wiki/Copilot-Skill).
+
 ---
 
 ## Funktionsumfang
