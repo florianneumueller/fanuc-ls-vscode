@@ -514,7 +514,8 @@
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "package": "vsce package"
+    "package": "vsce package",
+    "test": "npm run compile && node --test test/*.test.js"
   },
   "dependencies": {
     "basic-ftp": "^5.0.5"

@@ -194,6 +194,11 @@ export function parse(text: string): ParsedProgram {
 	return result;
 }
 
+/** Programmnamen: Buchstaben, Ziffern, Unterstrich - auch mit Ziffer am Anfang (z. B. 100_PICK). */
+export function isValidProgramName(name: string): boolean {
+	return /^[A-Za-z0-9_]+$/.test(name);
+}
+
 function stripTerminator(s: string): string {
 	return s.replace(/;\s*$/, '');
 }

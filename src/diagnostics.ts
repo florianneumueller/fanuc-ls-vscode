@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import {
+	isValidProgramName,
 	parse,
 	ParsedProgram,
 	TpLine,
@@ -169,10 +170,10 @@ function checkProgramName(
 		push(range, 'Nach /PROG fehlt der Programmname.', vscode.DiagnosticSeverity.Error, Code.InvalidProgramName);
 		return;
 	}
-	if (!/^[A-Za-z][A-Za-z0-9_]*$/.test(program.progName)) {
+	if (!isValidProgramName(program.progName)) {
 		push(
 			range,
-			`Ungültiger Programmname "${program.progName}". Erlaubt sind Buchstaben, Ziffern und Unterstrich; das erste Zeichen muss ein Buchstabe sein.`,
+			`Ungültiger Programmname "${program.progName}". Erlaubt sind Buchstaben, Ziffern und Unterstrich.`,
 			vscode.DiagnosticSeverity.Error,
 			Code.InvalidProgramName
 		);

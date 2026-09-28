@@ -28,7 +28,7 @@ jobs:
 
       - run: npm ci
 
-      - run: npm run compile
+      - run: npm test
 
       - name: VSIX paketieren
         run: npx vsce package --out fanuc-ls-${{ github.sha }}.vsix

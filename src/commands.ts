@@ -21,6 +21,7 @@ import {
 } from './controllerTree';
 import * as ftp from './ftp';
 import { fixLineCountEdit, renumberEdits, touchModifiedEdit } from './edits';
+import { isValidProgramName } from './parser';
 
 const ORIGIN_KEY = 'fanucLs.origins';
 
@@ -343,9 +344,9 @@ export function registerCommands(
 		const name = await vscode.window.showInputBox({
 			prompt: 'Programmname',
 			validateInput: (v) =>
-				/^[A-Za-z][A-Za-z0-9_]{0,35}$/.test(v)
+				isValidProgramName(v) && v.length <= 36
 					? undefined
-					: 'Buchstabe am Anfang, danach Buchstaben, Ziffern oder Unterstrich (max. 36 Zeichen).'
+					: 'Nur Buchstaben, Ziffern und Unterstrich (max. 36 Zeichen).'
 		});
 		if (!name) {
 			return;
