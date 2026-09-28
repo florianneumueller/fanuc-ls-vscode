@@ -1,8 +1,10 @@
 # Änderungen
 
-## Unveröffentlicht
+## 0.3.0
 
-- GitHub-Copilot-Agent-Skill `fanuc-tp-programmierung` wird mit der Extension installiert (`chatSkills`, VS Code ≥ 1.109); abschaltbar über `fanucLs.copilot.skill`
+- GitHub-Copilot-Agent-Skill `fanuc-tp-programmierung` mit Befehlsreferenz, geprüften Beispielprogrammen, Programmvorlage sowie Format- und Sicherheitsregeln
+- Der Skill wird mit der Extension installiert (`chatSkills`, VS Code ≥ 1.109) und ist über `fanucLs.copilot.skill` abschaltbar
+- Dokumentation als GitHub-Wiki mit Screenshots
 
 ## 0.2.0
 
