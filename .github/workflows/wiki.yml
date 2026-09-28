@@ -1,0 +1,43 @@
+name: Wiki veröffentlichen
+
+on:
+  push:
+    branches: [main]
+    paths: ['docs/wiki/**']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wiki
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Wiki-Repository holen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! git clone --depth 1 "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.wiki.git" wiki; then
+            echo "::error::Wiki-Repository nicht erreichbar. Einmalig im Browser unter Settings → Features → Wikis das Wiki aktivieren und über den Wiki-Tab eine erste (beliebige) Seite anlegen, dann diesen Workflow erneut starten."
+            exit 1
+          fi
+
+      - name: Seiten synchronisieren
+        run: |
+          rsync -a --delete --exclude .git docs/wiki/ wiki/
+          cd wiki
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Keine Änderungen am Wiki."
+            exit 0
+          fi
+          git commit -m "Wiki aus docs/wiki aktualisiert (${GITHUB_SHA::7})"
+          git push

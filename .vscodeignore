@@ -9,3 +9,4 @@ out/**/*.map
 node_modules/.bin/**
 .github/**
 package-lock.json
+docs/**
