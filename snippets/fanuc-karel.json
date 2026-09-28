@@ -1,0 +1,207 @@
+{
+  "Programm": {
+    "prefix": "program",
+    "description": "KAREL-Programmgerüst",
+    "body": [
+      "PROGRAM ${1:NAME}",
+      "%COMMENT = '${2:Beschreibung}'",
+      "%NOLOCKGROUP",
+      "%NOPAUSE = ERROR + COMMAND + TPENABLE",
+      "%NOBUSYLAMP",
+      "",
+      "CONST",
+      "\t${3:MAX_COUNT} = ${4:10}",
+      "",
+      "VAR",
+      "\t${5:i} : INTEGER",
+      "",
+      "BEGIN",
+      "\t$0",
+      "END ${1:NAME}"
+    ]
+  },
+  "Routine (Prozedur)": {
+    "prefix": "routine",
+    "description": "ROUTINE ohne Rückgabewert",
+    "body": [
+      "ROUTINE ${1:name}(${2:param} : ${3:INTEGER})",
+      "VAR",
+      "\t${4:tmp} : INTEGER",
+      "BEGIN",
+      "\t$0",
+      "END ${1:name}"
+    ]
+  },
+  "Routine (Funktion)": {
+    "prefix": "function",
+    "description": "ROUTINE mit Rückgabewert",
+    "body": [
+      "ROUTINE ${1:name}(${2:param} : ${3:INTEGER}) : ${4:BOOLEAN}",
+      "BEGIN",
+      "\t$0",
+      "\tRETURN (${5:TRUE})",
+      "END ${1:name}"
+    ]
+  },
+  "Routine aus Bibliothek": {
+    "prefix": "routinefrom",
+    "description": "Deklaration einer ROUTINE aus einem anderen Programm",
+    "body": [
+      "ROUTINE ${1:name}(${2:param} : ${3:INTEGER}) FROM ${4:library}$0"
+    ]
+  },
+  "IF": {
+    "prefix": "if",
+    "body": [
+      "IF ${1:bedingung} THEN",
+      "\t$0",
+      "ENDIF"
+    ]
+  },
+  "IF/ELSE": {
+    "prefix": "ifelse",
+    "body": [
+      "IF ${1:bedingung} THEN",
+      "\t$2",
+      "ELSE",
+      "\t$0",
+      "ENDIF"
+    ]
+  },
+  "FOR": {
+    "prefix": "for",
+    "body": [
+      "FOR ${1:i} = ${2:1} TO ${3:10} DO",
+      "\t$0",
+      "ENDFOR"
+    ]
+  },
+  "WHILE": {
+    "prefix": "while",
+    "body": [
+      "WHILE ${1:bedingung} DO",
+      "\t$0",
+      "ENDWHILE"
+    ]
+  },
+  "REPEAT": {
+    "prefix": "repeat",
+    "body": [
+      "REPEAT",
+      "\t$0",
+      "UNTIL ${1:bedingung}"
+    ]
+  },
+  "SELECT": {
+    "prefix": "select",
+    "body": [
+      "SELECT ${1:wert} OF",
+      "\tCASE(${2:1}):",
+      "\t\t$3",
+      "\tCASE(${4:2}):",
+      "\t\t$5",
+      "\tELSE:",
+      "\t\t$0",
+      "ENDSELECT"
+    ]
+  },
+  "Condition Handler": {
+    "prefix": "condition",
+    "description": "Überwachung mit CONDITION ... ENDCONDITION",
+    "body": [
+      "CONDITION[${1:1}]:",
+      "\tWHEN ${2:DIN[1] = ON} DO",
+      "\t\t${3:DOUT[1] = ON}",
+      "ENDCONDITION",
+      "ENABLE CONDITION[${1:1}]$0"
+    ]
+  },
+  "Struktur-Typ": {
+    "prefix": "structure",
+    "body": [
+      "TYPE",
+      "\t${1:name_t} = STRUCTURE",
+      "\t\t${2:feld} : ${3:INTEGER}",
+      "\tENDSTRUCTURE$0"
+    ]
+  },
+  "Ausgabe auf dem Teach Pendant": {
+    "prefix": "write",
+    "body": [
+      "WRITE TPDISPLAY('${1:Text}', ${2:wert}, CR)$0"
+    ]
+  },
+  "Eingabe am Teach Pendant": {
+    "prefix": "read",
+    "body": [
+      "WRITE TPPROMPT('${1:Eingabe}: ')",
+      "READ TPPROMPT(${2:variable})$0"
+    ]
+  },
+  "Zahlenregister lesen": {
+    "prefix": "getreg",
+    "description": "GET_REG: Wert aus R[n]",
+    "body": [
+      "GET_REG(${1:1}, ${2:real_flag}, ${3:int_val}, ${4:real_val}, ${5:status})$0"
+    ]
+  },
+  "Zahlenregister schreiben": {
+    "prefix": "setreg",
+    "description": "SET_INT_REG: Wert nach R[n]",
+    "body": [
+      "SET_INT_REG(${1:1}, ${2:wert}, ${3:status})$0"
+    ]
+  },
+  "Positionsregister lesen": {
+    "prefix": "getposreg",
+    "body": [
+      "${1:pos} = GET_POS_REG(${2:1}, ${3:status})$0"
+    ]
+  },
+  "Positionsregister schreiben": {
+    "prefix": "setposreg",
+    "body": [
+      "SET_POS_REG(${1:1}, ${2:pos}, ${3:status})$0"
+    ]
+  },
+  "Digitaler Ausgang": {
+    "prefix": "dout",
+    "body": [
+      "DOUT[${1:1}] = ${2|ON,OFF|}$0"
+    ]
+  },
+  "Warten auf Eingang": {
+    "prefix": "waitdin",
+    "body": [
+      "WAIT FOR DIN[${1:1}] = ${2|ON,OFF|}$0"
+    ]
+  },
+  "Verzögerung": {
+    "prefix": "delay",
+    "body": [
+      "DELAY ${1:1000}  -- ms$0"
+    ]
+  },
+  "Fehlermeldung": {
+    "prefix": "posterr",
+    "description": "POST_ERR(error_code, parameter, cause_code, severity)",
+    "body": [
+      "POST_ERR(${1:error_code}, '${2:parameter}', ${3:0}, ${4:0})$0"
+    ]
+  },
+  "Include": {
+    "prefix": "include",
+    "body": [
+      "%INCLUDE ${1:klevkeys}$0"
+    ]
+  },
+  "Status prüfen": {
+    "prefix": "chkstatus",
+    "body": [
+      "IF ${1:status} <> 0 THEN",
+      "\tPOST_ERR(${1:status}, '', 0, 0)",
+      "\tABORT",
+      "ENDIF$0"
+    ]
+  }
+}

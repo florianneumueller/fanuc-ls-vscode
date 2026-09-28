@@ -29,6 +29,13 @@
 |---|---|---|
 | `fanucLs.io.hideStatus` | `true` | gespeicherten Status wie `ON :` in `DO[6338:ON :Kommentar]` im Editor ausblenden |
 
+## KAREL
+
+| Einstellung | Standard | Bedeutung |
+|---|---|---|
+| `fanucLs.karel.ktransPath` | `""` | Pfad zu `ktrans.exe` aus ROBOGUIDE |
+| `fanucLs.karel.ktransArgs` | `""` | zusätzliche Argumente, z. B. `/ver V9.30-1` |
+
 ## Copilot
 
 | Einstellung | Standard | Bedeutung |

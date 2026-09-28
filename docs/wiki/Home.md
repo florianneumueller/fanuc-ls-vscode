@@ -1,6 +1,6 @@
 # FANUC TP (LS) – VS Code Extension
 
-Die Extension macht VS Code zum Editor für FANUC-TP-Programme im ASCII-Listing-Format (`.ls`). Sie bietet:
+Die Extension macht VS Code zum Editor für FANUC-TP-Programme im ASCII-Listing-Format (`.ls`) und für KAREL-Quelltexte (`.kl`). Sie bietet:
 
 - **Syntaxhighlighting & Outline**: Abschnitte, Bewegungen, Register, E/A, Schweißbefehle
 - **Syntaxprüfung** beim Tippen, mit Quick Fixes
@@ -21,6 +21,7 @@ Die Extension macht VS Code zum Editor für FANUC-TP-Programme im ASCII-Listing-
 | [[Bewegungsgruppen und externe Achsen]] | Prüfung gegen DEFAULT_GROUP, Achsen und Gruppen hinzufügen/entfernen |
 | [[Snippets und Zeilennummern]] | Snippet-Liste, automatische Nummerierung |
 | [[Ein und Ausgänge]] | E/A-Kommentare importieren, Hover, gültige Bereiche, Status ausblenden |
+| [[KAREL]] | KAREL-Dateien (.kl): Highlighting, Outline, Snippets, Kompilieren mit ktrans |
 | [[Controller und FTP]] | Steuerung einrichten, Dateien übertragen, Sicherung |
 | [[Einstellungen]] | Alle Optionen mit Standardwerten |
 | [[Praxishinweise]] | Tipps zur Steuerung (FTP, Geräte, ASCII-Upload) |

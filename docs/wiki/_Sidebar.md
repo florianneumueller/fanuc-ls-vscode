@@ -10,6 +10,7 @@
 - [[Bewegungsgruppen und externe Achsen]]
 - [[Controller und FTP]]
 - [[Ein und Ausgänge]]
+- [[KAREL]]
 - [[Einstellungen]]
 - [[Befehle]]
 - [[Praxishinweise]]

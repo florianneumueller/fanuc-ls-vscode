@@ -1,7 +1,7 @@
 {
   "name": "fanuc-ls",
   "displayName": "FANUC TP (LS)",
-  "description": "Syntaxhighlighting, Snippets, Syntaxprüfung und FTP-Dateitransfer für FANUC TP-Programme (.ls)",
+  "description": "Syntaxhighlighting, Snippets, Syntaxprüfung und FTP-Dateitransfer für FANUC TP-Programme (.ls) und KAREL (.kl)",
   "version": "0.3.0",
   "publisher": "frontlinenetworks",
   "license": "MIT",
@@ -20,17 +20,19 @@
   ],
   "keywords": [
     "fanuc",
-    "roboter",
-    "robot",
-    "teach pendant",
     "karel",
+    "kl",
     "ls",
+    "robot",
+    "roboter",
+    "teach pendant",
     "tp"
   ],
   "icon": "resources/icon.png",
   "main": "./out/extension.js",
   "activationEvents": [
     "onLanguage:fanuc-ls",
+    "onLanguage:fanuc-karel",
     "onView:fanucLs.controllers",
     "onView:fanucLs.labels",
     "onView:fanucLs.io"
@@ -53,6 +55,24 @@
           "light": "./resources/file-icon.svg",
           "dark": "./resources/file-icon.svg"
         }
+      },
+      {
+        "id": "fanuc-karel",
+        "aliases": [
+          "FANUC KAREL",
+          "KAREL",
+          "karel"
+        ],
+        "extensions": [
+          ".kl",
+          ".KL"
+        ],
+        "firstLine": "^\\s*PROGRAM\\s+\\w+",
+        "configuration": "./language-configuration-karel.json",
+        "icon": {
+          "light": "./resources/file-icon-karel.svg",
+          "dark": "./resources/file-icon-karel.svg"
+        }
       }
     ],
     "grammars": [
@@ -60,12 +80,21 @@
         "language": "fanuc-ls",
         "scopeName": "source.fanuc-ls",
         "path": "./syntaxes/fanuc-ls.tmLanguage.json"
+      },
+      {
+        "language": "fanuc-karel",
+        "scopeName": "source.fanuc-karel",
+        "path": "./syntaxes/fanuc-karel.tmLanguage.json"
       }
     ],
     "snippets": [
       {
         "language": "fanuc-ls",
         "path": "./snippets/fanuc-ls.json"
+      },
+      {
+        "language": "fanuc-karel",
+        "path": "./snippets/fanuc-karel.json"
       }
     ],
     "chatSkills": [
@@ -84,6 +113,11 @@
         "files.eol": "\r\n",
         "editor.formatOnType": true,
         "editor.formatOnSave": false
+      },
+      "[fanuc-karel]": {
+        "editor.insertSpaces": false,
+        "editor.tabSize": 4,
+        "editor.detectIndentation": true
       }
     },
     "viewsContainers": {
@@ -338,6 +372,12 @@
         "title": "Gültige E/A-/Register-Bereiche bearbeiten",
         "category": "FANUC",
         "icon": "$(symbol-ruler)"
+      },
+      {
+        "command": "fanucLs.karel.compile",
+        "title": "KAREL kompilieren (ktrans)",
+        "category": "FANUC",
+        "icon": "$(gear)"
       }
     ],
     "menus": {
@@ -495,6 +535,16 @@
           "command": "fanucLs.compareWithController",
           "when": "resourceLangId == fanuc-ls && resourceScheme == file",
           "group": "navigation@2"
+        },
+        {
+          "command": "fanucLs.karel.compile",
+          "when": "resourceLangId == fanuc-karel",
+          "group": "navigation@1"
+        },
+        {
+          "command": "fanucLs.uploadCurrentFile",
+          "when": "resourceLangId == fanuc-karel",
+          "group": "navigation@2"
         }
       ],
       "editor/context": [
@@ -527,6 +577,11 @@
           "command": "fanucLs.io.stripStatus",
           "when": "resourceLangId == fanuc-ls",
           "group": "1_modification@15"
+        },
+        {
+          "command": "fanucLs.karel.compile",
+          "when": "resourceLangId == fanuc-karel",
+          "group": "1_modification@10"
         }
       ],
       "explorer/context": [
@@ -627,6 +682,10 @@
         {
           "command": "fanucLs.io.stripStatus",
           "when": "editorLangId == fanuc-ls"
+        },
+        {
+          "command": "fanucLs.karel.compile",
+          "when": "editorLangId == fanuc-karel"
         }
       ],
       "fanucLs.positionsMenu": [
@@ -883,6 +942,17 @@
               "string"
             ]
           }
+        },
+        "fanucLs.karel.ktransPath": {
+          "type": "string",
+          "default": "",
+          "scope": "machine-overridable",
+          "markdownDescription": "Pfad zu `ktrans.exe` (KAREL-Übersetzer aus ROBOGUIDE, nur Windows), z. B. `C:\\\\Program Files (x86)\\\\FANUC\\\\WinOLPC\\\\bin\\\\ktrans.exe`. Wird von **FANUC: KAREL kompilieren** verwendet."
+        },
+        "fanucLs.karel.ktransArgs": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Zusätzliche Argumente für ktrans, z. B. `/ver V9.30-1` für die Softwareversion der Steuerung oder `/config robot.ini`."
         }
       }
     },

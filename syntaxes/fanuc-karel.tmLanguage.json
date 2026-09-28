@@ -1,0 +1,160 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "FANUC KAREL",
+  "scopeName": "source.fanuc-karel",
+  "patterns": [
+    {
+      "include": "#comment"
+    },
+    {
+      "include": "#directive"
+    },
+    {
+      "include": "#string"
+    },
+    {
+      "include": "#programHeader"
+    },
+    {
+      "include": "#routineHeader"
+    },
+    {
+      "include": "#endName"
+    },
+    {
+      "include": "#sysvar"
+    },
+    {
+      "include": "#io"
+    },
+    {
+      "include": "#type"
+    },
+    {
+      "include": "#constant"
+    },
+    {
+      "include": "#declKeyword"
+    },
+    {
+      "include": "#controlKeyword"
+    },
+    {
+      "include": "#operatorWord"
+    },
+    {
+      "include": "#builtin"
+    },
+    {
+      "include": "#number"
+    },
+    {
+      "include": "#operator"
+    }
+  ],
+  "repository": {
+    "comment": {
+      "match": "--.*$",
+      "name": "comment.line.double-dash.karel"
+    },
+    "directive": {
+      "match": "(?i)^\\s*(%[A-Z_]+)(.*)$",
+      "captures": {
+        "1": {
+          "name": "keyword.control.directive.karel"
+        },
+        "2": {
+          "patterns": [
+            {
+              "include": "#string"
+            },
+            {
+              "include": "#number"
+            },
+            {
+              "include": "#comment"
+            }
+          ]
+        }
+      }
+    },
+    "string": {
+      "begin": "'",
+      "end": "'|$",
+      "name": "string.quoted.single.karel"
+    },
+    "programHeader": {
+      "match": "(?i)^\\s*(PROGRAM)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+      "captures": {
+        "1": {
+          "name": "keyword.other.declaration.karel"
+        },
+        "2": {
+          "name": "entity.name.function.program.karel"
+        }
+      }
+    },
+    "routineHeader": {
+      "match": "(?i)^\\s*(ROUTINE)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+      "captures": {
+        "1": {
+          "name": "keyword.other.declaration.karel"
+        },
+        "2": {
+          "name": "entity.name.function.routine.karel"
+        }
+      }
+    },
+    "endName": {
+      "match": "(?i)^\\s*(END)\\s+([A-Za-z_][A-Za-z0-9_]*)\\b",
+      "captures": {
+        "1": {
+          "name": "keyword.other.declaration.karel"
+        },
+        "2": {
+          "name": "entity.name.function.karel"
+        }
+      }
+    },
+    "sysvar": {
+      "match": "\\$[A-Za-z_][A-Za-z0-9_]*(\\.\\$?[A-Za-z_][A-Za-z0-9_]*)*",
+      "name": "variable.language.sysvar.karel"
+    },
+    "io": {
+      "match": "(?i)(?<![A-Za-z0-9_$])(DIN|DOUT|RDI|RDO|GIN|GOUT|AIN|AOUT|OPIN|OPOUT|TPIN|TPOUT|UIN|UOUT|FLG|WDI|WDO|LDI|LDO|LAI|LAO|PLCIN|PLCOUT|SPIN|SPOUT)(?=\\s*\\[)",
+      "name": "support.variable.io.karel"
+    },
+    "type": {
+      "match": "(?i)(?<![A-Za-z0-9_$])(INTEGER|REAL|BOOLEAN|STRING|SHORT|BYTE|POSITION|XYZWPR|XYZWPREXT|JOINTPOS[1-9]?|VECTOR|CONFIG|PATH|FILE|QUEUE_TYPE|MODEL|CAM_SETUP|VIS_PROCESS)(?![A-Za-z0-9_])",
+      "name": "storage.type.karel"
+    },
+    "constant": {
+      "match": "(?i)(?<![A-Za-z0-9_$])(TRUE|FALSE|ON|OFF|NIL|TPDISPLAY|TPERROR|TPPROMPT|TPFUNC|TPSTATUS|CRTERROR|CRTPROMPT|CRTSTATUS|CRTFUNC|CR)(?![A-Za-z0-9_])",
+      "name": "constant.language.karel"
+    },
+    "declKeyword": {
+      "match": "(?i)(?<![A-Za-z0-9_$])(PROGRAM|ROUTINE|FROM|BEGIN|END|VAR|CONST|TYPE|STRUCTURE|ENDSTRUCTURE|ARRAY|IN|CMOS|DRAM|SHADOW|TEACH)(?![A-Za-z0-9_])",
+      "name": "keyword.other.declaration.karel"
+    },
+    "controlKeyword": {
+      "match": "(?i)(?<![A-Za-z0-9_$])(IF|THEN|ELSE|ENDIF|FOR|TO|DOWNTO|DO|ENDFOR|WHILE|ENDWHILE|REPEAT|UNTIL|SELECT|OF|CASE|ENDSELECT|RETURN|GO|GOTO|ABORT|PAUSE|DELAY|WAIT|CONDITION|ENDCONDITION|WHEN|ENABLE|DISABLE|PURGE|USING|ENDUSING|CONNECT|TIMER|NOWAIT|NOABORT|NOPAUSE|HOLD|UNHOLD|RELEASE|STOP|CANCEL|RESUME|SIGNAL|EVENT|OPEN|CLOSE|READ|WRITE|FILE|HAND|MOVE|AWAY|ABOUT|AXIS|NEAR|RELATIVE|VIA|WITH|PULSE|ATTACH)(?![A-Za-z0-9_])",
+      "name": "keyword.control.karel"
+    },
+    "operatorWord": {
+      "match": "(?i)(?<![A-Za-z0-9_$])(AND|OR|NOT|DIV|MOD)(?![A-Za-z0-9_])",
+      "name": "keyword.operator.logical.karel"
+    },
+    "builtin": {
+      "match": "(?i)(?<![A-Za-z0-9_$])(ABS|ACOS|ASIN|ATAN2|COS|SIN|TAN|SQRT|EXP|LN|ROUND|TRUNC|CHR|ORD|UNINIT|STR_LEN|SUB_STR|CNV_INT_STR|CNV_STR_INT|CNV_REAL_STR|CNV_STR_REAL|CNV_TIME_STR|CNV_JPOS_REL|CNV_REL_JPOS|CURPOS|CURJPOS|POS|UNPOS|INV|ORIENT|IN_RANGE|JOINT2POS|POS2JOINT|CHECK_EPOS|SET_INT_REG|SET_REAL_REG|GET_REG|GET_REG_CMT|SET_REG_CMT|GET_POS_REG|SET_POS_REG|GET_JPOS_REG|SET_JPOS_REG|SET_EPOS_REG|GET_POS_TYP|GET_PORT_VAL|SET_PORT_VAL|GET_PORT_CMT|SET_PORT_CMT|GET_PORT_SIM|SET_PORT_SIM|GET_PORT_ASG|GET_VAR|SET_VAR|CALL_PROG|CALL_PROGLIN|RUN_TASK|ABORT_TASK|PAUSE_TASK|CONT_TASK|GET_TSK_INFO|POST_ERR|POST_ERR_L|CLR_IO_STAT|IO_STATUS|FORCE_SPMENU|SET_CURSOR|CLR_UALRM|GET_TIME|SET_TIME|FILE_LIST|COPY_FILE|DELETE_FILE|RENAME_FILE|SET_FILE_POS|GET_FILE_POS|BYTES_LEFT|MSG_CONNECT|MSG_DISCO|MSG_PING|GET_ATTR_PRG|SET_ATTR_PRG|GET_POS_TPE|SET_POS_TPE|GET_JPOS_TPE|SET_JPOS_TPE|OPEN_TPE|CLOSE_TPE|CREATE_TPE|COPY_TPE|DELETE_TPE|SELECT_TPE|AVL_POS_NUM|GET_POS_FRM|SET_POS_FRM|FRAME|APPROACH|INI_DYN_DISI|INI_DYN_DISB|INI_DYN_DISR|INI_DYN_DISS|CNC_DYN_DISI|CNC_DYN_DISB|CNC_DYN_DISR|CNC_DYN_DISS|VAR_INFO|VAR_LIST|PROG_LIST|SEMA_LIFE|PEND_SEMA|POST_SEMA|CLEAR_SEMA|GET_QUEUE|INIT_QUEUE|APPEND_QUEUE|DELAY)(?=\\s*\\()",
+      "name": "support.function.builtin.karel"
+    },
+    "number": {
+      "match": "(?<![A-Za-z0-9_$])(\\d+\\.\\d*(E[+-]?\\d+)?|\\d*\\.\\d+(E[+-]?\\d+)?|\\d+)(?![A-Za-z0-9_])",
+      "name": "constant.numeric.karel"
+    },
+    "operator": {
+      "match": "(:=|<>|<=|>=|=|<|>|\\+|-|\\*|/|:|@|#|&)",
+      "name": "keyword.operator.karel"
+    }
+  }
+}

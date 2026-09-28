@@ -200,7 +200,7 @@ export function registerCommands(
 		const picked = await vscode.window.showOpenDialog({
 			canSelectMany: true,
 			openLabel: 'Auf Controller laden',
-			filters: { 'FANUC-Dateien': ['ls', 'LS', 'tp', 'TP', 'vr', 'va', 'sv', 'dt'], Alle: ['*'] }
+			filters: { 'FANUC-Dateien': ['ls', 'LS', 'tp', 'TP', 'pc', 'PC', 'kl', 'KL', 'vr', 'va', 'sv', 'dt'], Alle: ['*'] }
 		});
 		if (!picked || picked.length === 0) {
 			return;

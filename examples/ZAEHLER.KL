@@ -1,0 +1,49 @@
+PROGRAM zaehler
+%COMMENT = 'Teilezaehler'
+%NOLOCKGROUP
+%NOPAUSE = ERROR + COMMAND + TPENABLE
+
+CONST
+	REG_ZAEHLER = 10    -- Zahlenregister R[10]
+	MAX_TEILE   = 500
+
+TYPE
+	statistik_t = STRUCTURE
+		gut    : INTEGER
+		schlecht : INTEGER
+	ENDSTRUCTURE
+
+VAR
+	stat : statistik_t
+	status, anzahl : INTEGER
+	real_flag : BOOLEAN
+	real_wert : REAL
+
+ROUTINE lese_zaehler : INTEGER FROM zaehlib
+
+ROUTINE melde(text : STRING; wert : INTEGER)
+BEGIN
+	WRITE TPDISPLAY(text, wert, CR)
+END melde
+
+ROUTINE voll(n : INTEGER) : BOOLEAN
+VAR
+	grenze : INTEGER
+BEGIN
+	grenze = MAX_TEILE
+	RETURN (n >= grenze)
+END voll
+
+BEGIN
+	GET_REG(REG_ZAEHLER, real_flag, anzahl, real_wert, status)
+	IF status <> 0 THEN
+		POST_ERR(status, '', 0, 0)
+		ABORT
+	ENDIF
+	anzahl = anzahl + 1
+	SET_INT_REG(REG_ZAEHLER, anzahl, status)
+	melde('Teile: ', anzahl)
+	IF voll(anzahl) THEN
+		DOUT[20] = ON   -- Meldung "Behaelter voll"
+	ENDIF
+END zaehler

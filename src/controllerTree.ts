@@ -81,7 +81,10 @@ function iconFor(name: string): string {
 	if (lower.endsWith('.ls')) {
 		return 'file-code';
 	}
-	if (lower.endsWith('.tp')) {
+	if (lower.endsWith('.kl')) {
+		return 'file-code';
+	}
+	if (lower.endsWith('.tp') || lower.endsWith('.pc')) {
 		return 'file-binary';
 	}
 	if (lower.endsWith('.va') || lower.endsWith('.sv') || lower.endsWith('.vr')) {
