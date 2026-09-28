@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
-import { DIAG_SOURCE, invalidateProgramCache, setCallTargetSource, validate } from './diagnostics';
+import { DIAG_SOURCE, invalidateProgramCache, setCallTargetSource, setIoLookup, validate } from './diagnostics';
+import { IoStore } from './io';
 import { ControllerProgramIndex } from './controllerPrograms';
 import { FanucCodeActionProvider } from './quickfix';
 import { FanucSymbolProvider } from './symbols';
@@ -88,6 +89,20 @@ export function activate(context: vscode.ExtensionContext): void {
 		originOf: async (fsPath) => (await originOf(context, fsPath))?.controller
 	});
 
+	// --- E/A-Liste ------------------------------------------------------------
+
+	const ioStore = new IoStore();
+	context.subscriptions.push(
+		ioStore,
+		ioStore.onDidChange(() => {
+			for (const doc of vscode.workspace.textDocuments) {
+				void runValidation(doc);
+			}
+		})
+	);
+	setIoLookup((type, index) => ioStore.isConfigured(type, index));
+	void ioStore.reload();
+
 	// --- Validierungs-Trigger ------------------------------------------------
 
 	context.subscriptions.push(
@@ -122,7 +137,7 @@ export function activate(context: vscode.ExtensionContext): void {
 		void runValidation(doc);
 	}
 
-	registerCommands(context, tree, diagnostics, runValidation, programIndex);
+	registerCommands(context, tree, diagnostics, runValidation, programIndex, ioStore);
 }
 
 export function deactivate(): void {

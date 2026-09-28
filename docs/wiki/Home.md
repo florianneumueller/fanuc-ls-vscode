@@ -20,6 +20,7 @@ Die Extension macht VS Code zum Editor für FANUC-TP-Programme im ASCII-Listing-
 | [[Sprungmarken]] | Label-Ansicht, Umbenennen, Einfügen, Neu nummerieren |
 | [[Bewegungsgruppen und externe Achsen]] | Prüfung gegen DEFAULT_GROUP, Achsen und Gruppen hinzufügen/entfernen |
 | [[Snippets und Zeilennummern]] | Snippet-Liste, automatische Nummerierung |
+| [[Ein und Ausgänge]] | E/A-Kommentare importieren, Hover, gültige Bereiche, Status ausblenden |
 | [[Controller und FTP]] | Steuerung einrichten, Dateien übertragen, Sicherung |
 | [[Einstellungen]] | Alle Optionen mit Standardwerten |
 | [[Praxishinweise]] | Tipps zur Steuerung (FTP, Geräte, ASCII-Upload) |

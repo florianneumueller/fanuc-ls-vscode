@@ -145,6 +145,8 @@ Weitere Datentypen: `AR[n]` (Argumente eines Aufrufs, nur lesend), `SR[n]` (Stri
 | `F` | Flags |
 | `M` | Merker (Marker) |
 
+Referenzen können einen Kommentar tragen: `DO[12:Greifer zu]=ON ;`. Vom Controller exportierte Programme enthalten manchmal zusätzlich den Status beim Export, `DO[6338:ON :PrePosPickupDisk]`. Diesen Status **nie selbst schreiben** und beim Ändern nicht als aktuellen Zustand interpretieren.
+
 ```
 DO[1]=ON ;
 DO[1]=OFF ;

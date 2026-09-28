@@ -32,7 +32,8 @@
   "activationEvents": [
     "onLanguage:fanuc-ls",
     "onView:fanucLs.controllers",
-    "onView:fanucLs.labels"
+    "onView:fanucLs.labels",
+    "onView:fanucLs.io"
   ],
   "contributes": {
     "languages": [
@@ -105,6 +106,11 @@
           "id": "fanucLs.labels",
           "name": "Sprungmarken",
           "contextualTitle": "FANUC Sprungmarken"
+        },
+        {
+          "id": "fanucLs.io",
+          "name": "E/A",
+          "contextualTitle": "FANUC E/A"
         }
       ]
     },
@@ -291,6 +297,47 @@
         "command": "fanucLs.positions.create",
         "title": "Position im /POS-Block anlegen",
         "category": "FANUC"
+      },
+      {
+        "command": "fanucLs.io.importFromController",
+        "title": "E/A-Liste vom Controller importieren",
+        "category": "FANUC",
+        "icon": "$(cloud-download)"
+      },
+      {
+        "command": "fanucLs.io.importCsv",
+        "title": "E/A-Liste aus CSV importieren",
+        "category": "FANUC",
+        "icon": "$(file-add)"
+      },
+      {
+        "command": "fanucLs.io.exportCsv",
+        "title": "E/A-Liste als CSV exportieren",
+        "category": "FANUC",
+        "icon": "$(export)"
+      },
+      {
+        "command": "fanucLs.io.refresh",
+        "title": "E/A-Liste neu laden",
+        "category": "FANUC",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "fanucLs.io.stripStatus",
+        "title": "Gespeicherten E/A-Status aus der Datei entfernen",
+        "category": "FANUC"
+      },
+      {
+        "command": "fanucLs.io.toggleStatus",
+        "title": "E/A-Status im Editor ein-/ausblenden",
+        "category": "FANUC",
+        "icon": "$(eye)"
+      },
+      {
+        "command": "fanucLs.io.editRanges",
+        "title": "Gültige E/A-/Register-Bereiche bearbeiten",
+        "category": "FANUC",
+        "icon": "$(symbol-ruler)"
       }
     ],
     "menus": {
@@ -319,6 +366,36 @@
           "command": "fanucLs.labels.renumberAll",
           "when": "view == fanucLs.labels",
           "group": "navigation@2"
+        },
+        {
+          "command": "fanucLs.io.importFromController",
+          "when": "view == fanucLs.io",
+          "group": "navigation@1"
+        },
+        {
+          "command": "fanucLs.io.importCsv",
+          "when": "view == fanucLs.io",
+          "group": "navigation@2"
+        },
+        {
+          "command": "fanucLs.io.toggleStatus",
+          "when": "view == fanucLs.io",
+          "group": "navigation@3"
+        },
+        {
+          "command": "fanucLs.io.refresh",
+          "when": "view == fanucLs.io",
+          "group": "navigation@4"
+        },
+        {
+          "command": "fanucLs.io.exportCsv",
+          "when": "view == fanucLs.io",
+          "group": "1_io@1"
+        },
+        {
+          "command": "fanucLs.io.editRanges",
+          "when": "view == fanucLs.io",
+          "group": "1_io@2"
         }
       ],
       "view/item/context": [
@@ -396,6 +473,16 @@
           "command": "fanucLs.labels.changeNumber",
           "when": "view == fanucLs.labels && viewItem =~ /^label/",
           "group": "1_edit@2"
+        },
+        {
+          "command": "fanucLs.io.editRanges",
+          "when": "view == fanucLs.io && viewItem == ioType",
+          "group": "inline@1"
+        },
+        {
+          "command": "fanucLs.io.importFromController",
+          "when": "view == fanucLs.controllers && viewItem == controller",
+          "group": "2_transfer@2"
         }
       ],
       "editor/title": [
@@ -435,6 +522,11 @@
           "submenu": "fanucLs.positionsMenu",
           "when": "resourceLangId == fanuc-ls",
           "group": "1_modification@14"
+        },
+        {
+          "command": "fanucLs.io.stripStatus",
+          "when": "resourceLangId == fanuc-ls",
+          "group": "1_modification@15"
         }
       ],
       "explorer/context": [
@@ -530,6 +622,10 @@
         },
         {
           "command": "fanucLs.positions.create",
+          "when": "editorLangId == fanuc-ls"
+        },
+        {
+          "command": "fanucLs.io.stripStatus",
           "when": "editorLangId == fanuc-ls"
         }
       ],
@@ -659,6 +755,11 @@
           "default": false,
           "markdownDescription": "Beim Nummerieren auch den Abstand hinter dem Doppelpunkt vereinheitlichen: Bewegungsbefehle direkt anschließend, alle anderen Anweisungen mit zwei Leerzeichen."
         },
+        "fanucLs.io.hideStatus": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Den im Text gespeicherten E/A-Status ausblenden, z. B. `ON :` in `DO[6338:ON :PrePosPickupDisk]`. Die Datei wird nicht verändert; in der Zeile mit dem Cursor ist der Status sichtbar. Dauerhaft entfernen: **FANUC: Gespeicherten E/A-Status aus der Datei entfernen**."
+        },
         "fanucLs.copilot.skill": {
           "type": "boolean",
           "default": true,
@@ -775,7 +876,13 @@
             "UFRAME": 10,
             "PAYLOAD": 10
           },
-          "markdownDescription": "Obergrenzen je Registertyp für die Bereichsprüfung. `0` deaktiviert die Prüfung für diesen Typ. Werte an die Konfiguration der Steuerung anpassen."
+          "markdownDescription": "Gültige Bereiche je Typ für die Indexprüfung. Eine Zahl `n` bedeutet `1..n`, `0` schaltet die Prüfung ab. Für mehrere Bereiche einen Text angeben, z. B. `\"DO\": \"1-512, 6001-7000\"`. Signale aus einer importierten E/A-Liste gelten immer als gültig.",
+          "additionalProperties": {
+            "type": [
+              "number",
+              "string"
+            ]
+          }
         }
       }
     },

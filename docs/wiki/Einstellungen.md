@@ -23,6 +23,12 @@
 | `fanucLs.format.autoNumber` | `true` | Zeilennummer beim Zeilenumbruch im `/MN`-Block automatisch setzen |
 | `fanucLs.format.normalizeSpacing` | `false` | Abstand hinter dem Doppelpunkt vereinheitlichen |
 
+## E/A
+
+| Einstellung | Standard | Bedeutung |
+|---|---|---|
+| `fanucLs.io.hideStatus` | `true` | gespeicherten Status wie `ON :` in `DO[6338:ON :Kommentar]` im Editor ausblenden |
+
 ## Copilot
 
 | Einstellung | Standard | Bedeutung |
@@ -47,7 +53,7 @@
 | `fanucLs.validation.checkCallTargets` | `true` | `CALL`-Ziele im Workspace suchen, wenn keine Programmliste einer Steuerung vorliegt |
 | `fanucLs.validation.checkLineFormat` | `false` | strenges Zeilenformat |
 | `fanucLs.validation.maxLinearSpeed` | `2000` | Warnschwelle Bahngeschwindigkeit in mm/sec |
-| `fanucLs.validation.limits` | siehe unten | Obergrenzen je Registertyp; `0` = keine Prüfung |
+| `fanucLs.validation.limits` | siehe unten | gültige Bereiche je Typ: Zahl `n` = `1..n`, Text = Bereiche wie `"1-512, 6001-7000"`, `0` = keine Prüfung |
 
 Standard-Obergrenzen: `R 200`, `PR 100`, `DI/DO 512`, `RI/RO 8`, `GI/GO 10`, `AI/AO 64`, `SI/SO 16`, `UI 18`, `UO 20`, `F 1024`, `M 500`, `TIMER 10`, `AR 10`, `SR 100`, `UTOOL 10`, `UFRAME 10`, `PAYLOAD 10`, `P` ohne Prüfung.
 

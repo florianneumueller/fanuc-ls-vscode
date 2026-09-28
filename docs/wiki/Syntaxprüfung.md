@@ -35,7 +35,7 @@ Beim Überfahren mit der Maus erscheint die Meldung als Hover, darunter ein Link
 - `IF … THEN` ohne `ENDIF`, `FOR` ohne `ENDFOR`, `ELSE` ohne `IF`
 - `CALL`/`RUN` auf ein Programm, das **auf der Steuerung** (`md:`) nicht vorhanden ist (Warnung). Die Programmliste wird im Hintergrund per FTP geladen und 5 Minuten zwischengespeichert; geprüft wird gegen den Controller, von dem die Datei stammt (Download, Öffnen oder [[Klon|Controller-und-FTP#controller-klonen]]), oder gegen alle Controller *(`checkCallTargetsOnController`)*
 - ohne Programmliste einer Steuerung: `CALL`/`RUN` auf ein Programm ohne passende Datei im Workspace. Das ist nur ein Hinweis *(`checkCallTargets`)*
-- Registerindizes über den Obergrenzen aus `fanucLs.validation.limits`, Index `0`
+- Register- und E/A-Indizes außerhalb der Bereiche aus `fanucLs.validation.limits` (auch mehrere Bereiche wie `"1-512, 6001-7000"`), Index `0`; Signale aus einer importierten [[E/A-Liste|Ein-und-Ausgänge]] gelten als gültig
 - `UTOOL_NUM` außerhalb 1–10, `UFRAME_NUM` außerhalb 0–10
 
 Jede Regel lässt sich unter [[Einstellungen]] einzeln abschalten.
@@ -51,17 +51,20 @@ Cursor auf die markierte Stelle setzen und `Strg+.` drücken (oder auf die Glüh
 | Zeilennummern neu nummerieren | nummeriert `/MN` durch, aktualisiert `LINE_COUNT` und `MODIFIED` |
 | LINE_COUNT korrigieren | setzt `LINE_COUNT` auf die tatsächliche Zeilenzahl |
 | Semikolon anfügen | ergänzt das fehlende `;` |
+| Gültige Bereiche für … bearbeiten | erweitert die Bereiche in `fanucLs.validation.limits` um den passenden Block |
 | P[n] im /POS-Block anlegen | legt die fehlende Position mit passenden Gruppen und Achsen an (Werte 0, zum Teachen) |
 | GPx ergänzen / entfernen / (de)aktivieren | gleicht Positionen und `DEFAULT_GROUP` ab |
 
 ## Grenzwerte an die Steuerung anpassen
 
-Die Obergrenzen je Registertyp stehen in `fanucLs.validation.limits`. Ein Wert `0` schaltet die Prüfung für diesen Typ ab. Beispiel für eine Zelle mit mehr E/A:
+Die gültigen Bereiche je Typ stehen in `fanucLs.validation.limits`. Eine Zahl `n` bedeutet `1..n`, `0` schaltet die Prüfung ab, mehrere Bereiche als Text:
 
 ```jsonc
 "fanucLs.validation.limits": {
-  "R": 200, "PR": 100, "DI": 1024, "DO": 1024, "F": 1024
+  "R": 200, "PR": 100, "DI": "1-512, 4001-5000", "DO": "1-512, 6001-7000", "F": 1024
 }
 ```
+
+Siehe auch [[Ein und Ausgänge]].
 
 Nicht aufgeführte Typen behalten ihren Standardwert.

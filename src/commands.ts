@@ -25,6 +25,7 @@ import { isValidProgramName } from './parser';
 import { registerCloneCommands } from './clone';
 import { originFromClone } from './cloneCore';
 import { ControllerProgramIndex } from './controllerPrograms';
+import { IoStore, registerIoFeatures } from './io';
 
 const ORIGIN_KEY = 'fanucLs.origins';
 
@@ -38,7 +39,8 @@ export function registerCommands(
 	tree: ControllerTreeProvider,
 	diagnostics: vscode.DiagnosticCollection,
 	runValidation: (doc: vscode.TextDocument) => Promise<void>,
-	programIndex: ControllerProgramIndex
+	programIndex: ControllerProgramIndex,
+	ioStore: IoStore
 ): void {
 	const secrets = context.secrets;
 	const reg = (id: string, fn: (...args: any[]) => any) =>
@@ -362,6 +364,13 @@ export function registerCommands(
 	});
 
 	reg('fanucLs.showLog', () => ftp.showLog());
+
+	registerIoFeatures(context, ioStore, {
+		secrets,
+		originOf: (p) => originOf(context, p),
+		pickController,
+		withProgress
+	});
 
 	registerCloneCommands(context, tree, {
 		withProgress,

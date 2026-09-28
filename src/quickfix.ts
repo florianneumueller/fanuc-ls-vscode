@@ -55,6 +55,16 @@ export class FanucCodeActionProvider implements vscode.CodeActionProvider {
 				}
 			}
 
+			if (code === Code.IndexRange) {
+				const m = /^([A-Z]+)\[(\d+)\] liegt außerhalb/.exec(diag.message);
+				if (m && !seen.has(code + m[1])) {
+					seen.add(code + m[1]);
+					actions.push(
+						this.command(`Gültige Bereiche für ${m[1]} bearbeiten …`, 'fanucLs.io.editRanges', [m[1], parseInt(m[2], 10)], diag, true)
+					);
+				}
+			}
+
 			if (code === Code.UndefinedPosition) {
 				const m = /^P\[(\d+)\]/.exec(diag.message);
 				if (m && !seen.has(code + m[1])) {

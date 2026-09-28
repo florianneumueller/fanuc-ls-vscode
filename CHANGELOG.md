@@ -9,6 +9,8 @@
 - Sprungmarken: eigene Ansicht mit Sprüngen je Label, Einfügen, Kommentar bearbeiten, Nummer ändern, alle neu nummerieren; im Editor Gehe zu Definition, Verweise, Umbenennen (F2), Hover, Hervorhebung, Vervollständigung (#7)
 - Positionen werden gegen `DEFAULT_GROUP` geprüft (fehlende/überzählige Gruppen, uneinheitliche externe Achsen) mit Quick Fixes (#4)
 - Befehle: externe Achse hinzufügen/entfernen, Bewegungsgruppe hinzufügen/entfernen, Position anlegen (auch als Quick Fix für nicht definierte P[n]) (#5)
+- E/A-Verwaltung: Ansicht E/A mit Kommentaren aus Programmen, Import vom Controller (z. B. `md:IOSTATE.DG`) und aus CSV, Export als CSV, Hover und Vervollständigung mit Kommentar (#1)
+- Gültige Bereiche je Typ (`"DO": "1-512, 6001-7000"`) mit Quick Fix; importierte Signale gelten als gültig; gespeicherter Status wie `ON :` wird im Editor ausgeblendet oder per Befehl entfernt (#2)
 - Dateien in einem Klon kennen ihre Herkunft auch ohne gemerkten Download (Upload, Vergleich, CALL-Prüfung)
 
 ## 0.3.0

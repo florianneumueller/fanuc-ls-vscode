@@ -9,6 +9,7 @@
 - [[Sprungmarken]]
 - [[Bewegungsgruppen und externe Achsen]]
 - [[Controller und FTP]]
+- [[Ein und Ausgänge]]
 - [[Einstellungen]]
 - [[Befehle]]
 - [[Praxishinweise]]

@@ -3,6 +3,7 @@ import * as path from 'path';
 import { ControllerConfig, getControllers } from './config';
 import { ControllerProgramIndex, PROGRAM_DEVICE } from './controllerPrograms';
 import { checkGroups, parsePositions } from './posData';
+import { formatRanges, inRanges, parseRanges } from './ioCore';
 import {
 	isValidProgramName,
 	parse,
@@ -76,6 +77,13 @@ let callSource: CallTargetSource | undefined;
 
 export function setCallTargetSource(source: CallTargetSource): void {
 	callSource = source;
+}
+
+/** Ist ein Signal in einer importierten E/A-Liste enthalten? Dann gilt es als gültig konfiguriert. */
+let ioConfigured: ((type: string, index: number) => boolean) | undefined;
+
+export function setIoLookup(fn: (type: string, index: number) => boolean): void {
+	ioConfigured = fn;
 }
 
 export function invalidateProgramCache(): void {
@@ -234,7 +242,7 @@ function checkTpLines(program: ParsedProgram, cfg: vscode.WorkspaceConfiguration
 	const checkMotion = cfg.get<boolean>('validation.checkMotion', true);
 	const checkFormat = cfg.get<boolean>('validation.checkLineFormat', false);
 	const maxLinear = cfg.get<number>('validation.maxLinearSpeed', 2000);
-	const limits = cfg.get<Record<string, number>>('validation.limits', {});
+	const limits = cfg.get<Record<string, number | string>>('validation.limits', {});
 
 	program.tpLines.forEach((tp, idx) => {
 		// Zeilennummern
@@ -271,11 +279,11 @@ function checkTpLines(program: ParsedProgram, cfg: vscode.WorkspaceConfiguration
 
 		// Indexbereiche
 		for (const ref of findReferences(tp.text)) {
-			const limit = limits[ref.type];
-			if (typeof limit === 'number' && limit > 0 && ref.id > limit) {
+			const ranges = parseRanges(limits[ref.type]);
+			if (ranges && ref.id > 0 && !inRanges(ranges, ref.id) && !ioConfigured?.(ref.type, ref.id)) {
 				push(
 					mapRange(program, tp, ref.index, ref.length),
-					`${ref.type}[${ref.id}] liegt über der konfigurierten Obergrenze ${limit}. Grenzwerte unter "fanucLs.validation.limits" anpassen.`,
+					`${ref.type}[${ref.id}] liegt außerhalb der konfigurierten Bereiche (${formatRanges(ranges)}). Bereiche unter "fanucLs.validation.limits" anpassen oder die E/A-Liste vom Controller importieren.`,
 					vscode.DiagnosticSeverity.Warning,
 					Code.IndexRange
 				);
@@ -291,8 +299,8 @@ function checkTpLines(program: ParsedProgram, cfg: vscode.WorkspaceConfiguration
 		}
 
 		// UTOOL_NUM / UFRAME_NUM
-		checkFrameNumber(program, tp, clean, 'UTOOL_NUM', 1, limits['UTOOL'] ?? 10, push);
-		checkFrameNumber(program, tp, clean, 'UFRAME_NUM', 0, limits['UFRAME'] ?? 10, push);
+		checkFrameNumber(program, tp, clean, 'UTOOL_NUM', 1, maxOf(limits['UTOOL'], 10), push);
+		checkFrameNumber(program, tp, clean, 'UFRAME_NUM', 0, maxOf(limits['UFRAME'], 10), push);
 
 		// Bewegungsbefehle
 		const motion = checkMotion ? parseMotion(tp.text) : undefined;
@@ -666,6 +674,15 @@ async function checkCalls(
 			Code.CallTarget
 		);
 	}
+}
+
+/** Obergrenze aus einem Grenzwert (Zahl oder Bereiche); 0 = keine Prüfung. */
+function maxOf(limit: number | string | undefined, fallback: number): number {
+	if (limit === undefined) {
+		return fallback;
+	}
+	const ranges = parseRanges(limit);
+	return ranges ? Math.max(...ranges.map((r) => r.to)) : 0;
 }
 
 function count(s: string, ch: string): number {
