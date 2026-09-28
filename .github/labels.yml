@@ -1,0 +1,8 @@
+# Wird vom Workflow "Labels synchronisieren" angelegt/aktualisiert (name|farbe|beschreibung)
+- "bug|d73a4a|Fehlverhalten der Extension"
+- "enhancement|a2eeef|Neue Funktion oder Verbesserung"
+- "bereich: syntaxprüfung|1d76db|Diagnosen, Validierung, Grenzwerte"
+- "bereich: io|0e8a16|DI/DO und andere I/O-Signale"
+- "bereich: gruppen & achsen|5319e7|Bewegungsgruppen, externe Achsen, /POS"
+- "bereich: ftp|fbca04|Controller-Ansicht und Dateitransfer"
+- "bereich: karel|c5def5|Unterstützung für Karel-Dateien (.kl)"

@@ -1,0 +1,46 @@
+name: Bug melden
+description: Fehlverhalten der Extension (Syntaxprüfung, Highlighting, FTP, Snippets …)
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: textarea
+    id: beschreibung
+    attributes:
+      label: Was passiert?
+      description: Kurze Beschreibung des Fehlers.
+    validations:
+      required: true
+  - type: textarea
+    id: erwartet
+    attributes:
+      label: Was sollte passieren?
+    validations:
+      required: true
+  - type: textarea
+    id: beispiel
+    attributes:
+      label: Beispiel aus der .ls-Datei
+      description: Möglichst kleiner Ausschnitt, der den Fehler zeigt (wird als Code formatiert).
+      render: text
+  - type: dropdown
+    id: bereich
+    attributes:
+      label: Bereich
+      options:
+        - Syntaxprüfung / Diagnosen
+        - Syntax-Highlighting
+        - Snippets / Formatierung / Nummerierung
+        - FTP / Controller-Ansicht
+        - Sonstiges
+    validations:
+      required: true
+  - type: input
+    id: steuerung
+    attributes:
+      label: Steuerung / Softwarestand
+      placeholder: z. B. R-30iB Plus, V9.30
+  - type: input
+    id: version
+    attributes:
+      label: Extension- und VS-Code-Version
+      placeholder: z. B. fanuc-ls 0.2.0, VS Code 1.95

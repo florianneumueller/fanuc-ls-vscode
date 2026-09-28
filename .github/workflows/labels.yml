@@ -1,0 +1,26 @@
+name: Labels synchronisieren
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/labels.yml']
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Labels anlegen/aktualisieren
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node -e "require('fs').readFileSync('.github/labels.yml','utf8').split('\n')
+            .map(l => l.match(/^- \"(.*)\"\s*$/)).filter(Boolean)
+            .forEach(m => console.log(m[1]))" |
+          while IFS='|' read -r name color desc; do
+            gh label create "$name" --color "$color" --description "$desc" --force
+          done

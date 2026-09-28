@@ -1,0 +1,23 @@
+name: Feature-Idee
+description: Neue Funktion oder Verbesserung vorschlagen
+title: "[Feature] "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idee
+    attributes:
+      label: Idee
+      description: Was soll die Extension können?
+    validations:
+      required: true
+  - type: textarea
+    id: nutzen
+    attributes:
+      label: Wofür / Anwendungsfall
+      description: In welcher Situation hilft das? Wie arbeitest du heute ohne das Feature?
+  - type: textarea
+    id: beispiel
+    attributes:
+      label: Beispiel
+      description: Optional – LS-/Karel-Ausschnitt, Screenshot oder Ablaufskizze.
+      render: text
