@@ -32,7 +32,8 @@ Beim Überfahren mit der Maus erscheint die Meldung als Hover, darunter ein Link
 - `P[n]` verwendet, aber nicht im `/POS`-Block definiert; doppelt definiert; nie verwendet (ausgegraut) *(`checkPositions`, `reportUnusedPositions`)*
 - `LBL[n]` undefiniert, doppelt oder nie angesprungen *(`checkLabels`)*
 - `IF … THEN` ohne `ENDIF`, `FOR` ohne `ENDFOR`, `ELSE` ohne `IF`
-- `CALL`/`RUN` auf ein Programm ohne passende Datei im Workspace. Das ist nur ein Hinweis, denn auf der Steuerung kann das Programm trotzdem existieren *(`checkCallTargets`)*
+- `CALL`/`RUN` auf ein Programm, das **auf der Steuerung** (`md:`) nicht vorhanden ist (Warnung). Die Programmliste wird im Hintergrund per FTP geladen und 5 Minuten zwischengespeichert; geprüft wird gegen den Controller, von dem die Datei stammt (Download, Öffnen oder [[Klon|Controller-und-FTP#controller-klonen]]), oder gegen alle Controller *(`checkCallTargetsOnController`)*
+- ohne Programmliste einer Steuerung: `CALL`/`RUN` auf ein Programm ohne passende Datei im Workspace. Das ist nur ein Hinweis *(`checkCallTargets`)*
 - Registerindizes über den Obergrenzen aus `fanucLs.validation.limits`, Index `0`
 - `UTOOL_NUM` außerhalb 1–10, `UFRAME_NUM` außerhalb 0–10
 

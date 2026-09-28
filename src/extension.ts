@@ -1,9 +1,10 @@
 import * as vscode from 'vscode';
-import { DIAG_SOURCE, invalidateProgramCache, validate } from './diagnostics';
+import { DIAG_SOURCE, invalidateProgramCache, setCallTargetSource, validate } from './diagnostics';
+import { ControllerProgramIndex } from './controllerPrograms';
 import { FanucCodeActionProvider } from './quickfix';
 import { FanucSymbolProvider } from './symbols';
 import { ControllerTreeProvider } from './controllerTree';
-import { registerCommands } from './commands';
+import { originOf, registerCommands } from './commands';
 import { FanucDocumentFormatter, FanucOnTypeFormatter } from './format';
 
 const SELECTOR: vscode.DocumentSelector = { language: 'fanuc-ls' };
@@ -66,6 +67,22 @@ export function activate(context: vscode.ExtensionContext): void {
 		})
 	);
 
+	// --- Programmlisten der Controller für die CALL-Prüfung ------------------
+
+	const programIndex = new ControllerProgramIndex(context.secrets);
+	context.subscriptions.push(
+		programIndex,
+		programIndex.onDidUpdate(() => {
+			for (const doc of vscode.workspace.textDocuments) {
+				void runValidation(doc);
+			}
+		})
+	);
+	setCallTargetSource({
+		index: programIndex,
+		originOf: async (fsPath) => (await originOf(context, fsPath))?.controller
+	});
+
 	// --- Validierungs-Trigger ------------------------------------------------
 
 	context.subscriptions.push(
@@ -91,6 +108,7 @@ export function activate(context: vscode.ExtensionContext): void {
 			}
 			if (e.affectsConfiguration('fanucLs.controllers') || e.affectsConfiguration('fanucLs.ftp')) {
 				tree.refresh();
+				programIndex.invalidate();
 			}
 		})
 	);
@@ -99,7 +117,7 @@ export function activate(context: vscode.ExtensionContext): void {
 		void runValidation(doc);
 	}
 
-	registerCommands(context, tree, diagnostics, runValidation);
+	registerCommands(context, tree, diagnostics, runValidation, programIndex);
 }
 
 export function deactivate(): void {

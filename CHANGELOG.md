@@ -5,6 +5,8 @@
 - Programmnamen dürfen Ziffern enthalten, auch am Anfang (#3)
 - Vergleich lokale Datei ↔ Controller im Diff-Editor, in beide Richtungen (#8)
 - Controller klonen: Geräte in einen Ordner laden, Änderungen anzeigen und gezielt zurückübertragen, mit Konfliktprüfung gegen Änderungen auf der Steuerung (#10)
+- CALL/RUN-Ziele werden im Hintergrund gegen die Programmliste der Steuerung geprüft (`fanucLs.validation.checkCallTargetsOnController`) (#9)
+- Dateien in einem Klon kennen ihre Herkunft auch ohne gemerkten Download (Upload, Vergleich, CALL-Prüfung)
 
 ## 0.3.0
 

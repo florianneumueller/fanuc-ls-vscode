@@ -11,6 +11,7 @@ import {
 	MANIFEST_NAME,
 	computeChanges,
 	deviceFolder,
+	findCloneRoot,
 	matchesTypes,
 	readManifest,
 	sha1File,
@@ -23,6 +24,8 @@ export interface CloneDeps {
 	showDiff(controller: ControllerConfig, remotePath: string, localPath: string): Promise<void>;
 	pickController(): Promise<ControllerConfig | undefined>;
 	resolveDownloadDir(): Promise<string | undefined>;
+	/** Nach Uploads: Programmliste des Controllers neu laden. */
+	programsChanged(controllerName: string): void;
 	/** Anzahl der Syntaxfehler einer Datei (0 für Nicht-LS-Dateien). */
 	countErrors(file: string): Promise<number>;
 }
@@ -242,6 +245,7 @@ export function registerCloneCommands(
 			await writeManifest(clone.root, clone.manifest);
 		});
 		tree.refresh();
+		deps.programsChanged(controller.name);
 
 		if (conflicts.length === 0) {
 			vscode.window.showInformationMessage(`${uploaded.length} Datei(en) auf ${controller.name} übertragen.`);
@@ -357,30 +361,6 @@ export function registerCloneCommands(
 		}
 		return undefined;
 	}
-}
-
-/** Sucht vom Pfad aufwärts nach einem Klon-Manifest. */
-async function findCloneRoot(start: string): Promise<{ root: string; manifest: CloneManifest } | undefined> {
-	let dir = start;
-	try {
-		if (!(await fs.stat(start)).isDirectory()) {
-			dir = path.dirname(start);
-		}
-	} catch {
-		dir = path.dirname(start);
-	}
-	for (let i = 0; i < 6; i++) {
-		const manifest = await readManifest(dir);
-		if (manifest) {
-			return { root: dir, manifest };
-		}
-		const parent = path.dirname(dir);
-		if (parent === dir) {
-			break;
-		}
-		dir = parent;
-	}
-	return undefined;
 }
 
 function changeItem(c: CloneChange): vscode.QuickPickItem {

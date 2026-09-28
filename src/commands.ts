@@ -23,6 +23,8 @@ import * as ftp from './ftp';
 import { fixLineCountEdit, renumberEdits, touchModifiedEdit } from './edits';
 import { isValidProgramName } from './parser';
 import { registerCloneCommands } from './clone';
+import { originFromClone } from './cloneCore';
+import { ControllerProgramIndex } from './controllerPrograms';
 
 const ORIGIN_KEY = 'fanucLs.origins';
 
@@ -35,7 +37,8 @@ export function registerCommands(
 	context: vscode.ExtensionContext,
 	tree: ControllerTreeProvider,
 	diagnostics: vscode.DiagnosticCollection,
-	runValidation: (doc: vscode.TextDocument) => Promise<void>
+	runValidation: (doc: vscode.TextDocument) => Promise<void>,
+	programIndex: ControllerProgramIndex
 ): void {
 	const secrets = context.secrets;
 	const reg = (id: string, fn: (...args: any[]) => any) =>
@@ -114,7 +117,10 @@ export function registerCommands(
 		tree.refresh();
 	});
 
-	reg('fanucLs.refresh', (node?: FanucNode) => tree.refresh(node));
+	reg('fanucLs.refresh', (node?: FanucNode) => {
+		tree.refresh(node);
+		programIndex.invalidate(node && 'controller' in node ? node.controller.name : undefined);
+	});
 
 	// --- Dateitransfer -------------------------------------------------------
 
@@ -362,6 +368,7 @@ export function registerCommands(
 		rememberOrigin: (local, origin) => rememberOrigin(context, local, origin),
 		showDiff,
 		pickController,
+		programsChanged: (name) => programIndex.invalidate(name),
 		resolveDownloadDir,
 		countErrors: async (file) => {
 			if (!/\.ls$/i.test(file)) {
@@ -405,6 +412,7 @@ export function registerCommands(
 		await withProgress(`${path.basename(localPath)} -> ${controller.name}`, () =>
 			ftp.uploadFile(controller, secrets, localPath, remotePath)
 		);
+		programIndex.invalidate(controller.name);
 		vscode.window.showInformationMessage(`${path.basename(localPath)} wurde nach ${remotePath} geladen.`);
 	}
 
@@ -416,7 +424,7 @@ export function registerCommands(
 		localPath: string,
 		purpose: 'upload' | 'compare'
 	): Promise<{ controller: ControllerConfig; remotePath: string } | undefined> {
-		const origin = getOrigin(context, localPath);
+		const origin = await originOf(context, localPath);
 		const known = origin ? getControllers().find((c) => c.name === origin.controller) : undefined;
 		if (known && origin) {
 			if (purpose === 'compare') {
@@ -641,6 +649,11 @@ function rememberOrigin(context: vscode.ExtensionContext, localPath: string, ori
 	const map = context.workspaceState.get<Record<string, Origin>>(ORIGIN_KEY, {});
 	map[localPath] = origin;
 	void context.workspaceState.update(ORIGIN_KEY, map);
+}
+
+/** Herkunft einer lokalen Datei: gemerkt beim Download/Öffnen, sonst aus einem Klon-Manifest. */
+export async function originOf(context: vscode.ExtensionContext, localPath: string): Promise<Origin | undefined> {
+	return getOrigin(context, localPath) ?? (await originFromClone(localPath));
 }
 
 function getOrigin(context: vscode.ExtensionContext, localPath: string): Origin | undefined {

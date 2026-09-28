@@ -137,3 +137,46 @@ export async function computeChanges(root: string, manifest: CloneManifest): Pro
 	const order: Record<ChangeKind, number> = { modified: 0, added: 1, deleted: 2 };
 	return changes.sort((a, b) => order[a.kind] - order[b.kind] || a.relPath.localeCompare(b.relPath));
 }
+
+/** Sucht vom Pfad aufwärts nach einem Klon-Manifest. */
+export async function findCloneRoot(start: string): Promise<{ root: string; manifest: CloneManifest } | undefined> {
+	let dir = start;
+	try {
+		if (!(await fs.stat(start)).isDirectory()) {
+			dir = path.dirname(start);
+		}
+	} catch {
+		dir = path.dirname(start);
+	}
+	for (let i = 0; i < 6; i++) {
+		const manifest = await readManifest(dir);
+		if (manifest) {
+			return { root: dir, manifest };
+		}
+		const parent = path.dirname(dir);
+		if (parent === dir) {
+			break;
+		}
+		dir = parent;
+	}
+	return undefined;
+}
+
+/** Herkunft einer Datei innerhalb eines Klons: Controller und Remote-Pfad. */
+export async function originFromClone(localPath: string): Promise<{ controller: string; remotePath: string } | undefined> {
+	const clone = await findCloneRoot(localPath);
+	if (!clone) {
+		return undefined;
+	}
+	const rel = path.relative(clone.root, localPath).split(path.sep).join('/');
+	const known = clone.manifest.files[rel];
+	if (known) {
+		return { controller: clone.manifest.controller, remotePath: known.remotePath };
+	}
+	const slash = rel.indexOf('/');
+	const device = slash > 0 ? clone.manifest.devices[rel.slice(0, slash)] : undefined;
+	if (!device) {
+		return undefined;
+	}
+	return { controller: clone.manifest.controller, remotePath: remotePathFor(device, rel.slice(slash + 1)) };
+}

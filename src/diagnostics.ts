@@ -1,5 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
+import { ControllerConfig, getControllers } from './config';
+import { ControllerProgramIndex, PROGRAM_DEVICE } from './controllerPrograms';
 import {
 	isValidProgramName,
 	parse,
@@ -32,6 +34,7 @@ export const enum Code {
 	Brackets = 'brackets',
 	IndexRange = 'index-range',
 	CallTarget = 'call-target',
+	CallTargetController = 'call-target-controller',
 	LineFormat = 'line-format'
 }
 
@@ -55,6 +58,19 @@ async function workspacePrograms(): Promise<Set<string>> {
 	}
 	programCache = { names, stamp: now };
 	return names;
+}
+
+/** Quelle für die Prüfung der CALL-Ziele gegen die Steuerung (wird beim Aktivieren gesetzt). */
+export interface CallTargetSource {
+	index: ControllerProgramIndex;
+	/** Name des Controllers, von dem die lokale Datei stammt */
+	originOf(fsPath: string): Promise<string | undefined>;
+}
+
+let callSource: CallTargetSource | undefined;
+
+export function setCallTargetSource(source: CallTargetSource): void {
+	callSource = source;
 }
 
 export function invalidateProgramCache(): void {
@@ -93,9 +109,7 @@ export async function validate(doc: vscode.TextDocument): Promise<vscode.Diagnos
 	checkLabels(program, cfg, push);
 	checkBlocks(program, push);
 
-	if (cfg.get<boolean>('validation.checkCallTargets', true)) {
-		await checkCalls(program, doc, push);
-	}
+	await checkCalls(program, doc, cfg, push);
 
 	return out;
 }
@@ -566,11 +580,31 @@ function checkBlocks(program: ParsedProgram, push: Push): void {
 	}
 }
 
-async function checkCalls(program: ParsedProgram, doc: vscode.TextDocument, push: Push): Promise<void> {
+/** Controller, gegen die die CALL-Ziele dieser Datei geprüft werden. */
+async function callControllers(doc: vscode.TextDocument, cfg: vscode.WorkspaceConfiguration): Promise<ControllerConfig[]> {
+	const mode = cfg.get<string>('validation.checkCallTargetsOnController', 'origin');
+	if (!callSource || mode === 'off' || doc.uri.scheme !== 'file') {
+		return [];
+	}
+	const all = getControllers();
+	if (mode === 'all') {
+		return all;
+	}
+	const origin = await callSource.originOf(doc.uri.fsPath);
+	return all.filter((c) => c.name === origin);
+}
+
+async function checkCalls(
+	program: ParsedProgram,
+	doc: vscode.TextDocument,
+	cfg: vscode.WorkspaceConfiguration,
+	push: Push
+): Promise<void> {
+	const checkWorkspace = cfg.get<boolean>('validation.checkCallTargets', true);
 	const calls: { tp: TpLine; name: string; index: number }[] = [];
 	for (const tp of program.tpLines) {
 		const clean = withoutCommentsAndStrings(tp.text);
-		const re = /\b(?:CALL|RUN)\s+([A-Za-z_][A-Za-z0-9_]*)/g;
+		const re = /\b(?:CALL|RUN)\s+([A-Za-z0-9_]+)/g;
 		let m: RegExpExecArray | null;
 		while ((m = re.exec(clean)) !== null) {
 			calls.push({ tp, name: m[1], index: m.index + m[0].length - m[1].length });
@@ -579,14 +613,34 @@ async function checkCalls(program: ParsedProgram, doc: vscode.TextDocument, push
 	if (calls.length === 0) {
 		return;
 	}
-	const known = await workspacePrograms();
-	if (known.size === 0) {
-		return;
-	}
-	const self = path.basename(doc.uri.fsPath).replace(/\.[^.]+$/, '').toUpperCase();
+
+	// Programmlisten der Steuerungen - nur die bereits geladenen, das Laden läuft im Hintergrund
+	const controllers = await callControllers(doc, cfg);
+	const lists = controllers
+		.map((c) => ({ controller: c, names: callSource!.index.lookup(c).names }))
+		.filter((l): l is { controller: ControllerConfig; names: Set<string> } => !!l.names);
+
+	const known = checkWorkspace ? await workspacePrograms() : new Set<string>();
+	const self = (program.progName ?? path.basename(doc.uri.fsPath).replace(/\.[^.]+$/, '')).toUpperCase();
 	for (const call of calls) {
 		const name = call.name.toUpperCase();
-		if (name === self || known.has(name)) {
+		if (name === self) {
+			continue;
+		}
+		if (lists.length > 0) {
+			if (!lists.some((l) => l.names.has(name))) {
+				const where = lists.map((l) => l.controller.name).join(', ');
+				push(
+					mapRange(program, call.tp, call.index, call.name.length),
+					`"${call.name}" ist auf ${where} (${PROGRAM_DEVICE}) nicht vorhanden.` +
+						(known.has(name) ? ' Im Workspace gibt es eine Datei dazu - noch nicht übertragen?' : ''),
+					vscode.DiagnosticSeverity.Warning,
+					Code.CallTargetController
+				);
+			}
+			continue;
+		}
+		if (!checkWorkspace || known.size === 0 || known.has(name)) {
 			continue;
 		}
 		push(

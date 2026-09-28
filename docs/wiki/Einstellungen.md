@@ -42,7 +42,8 @@
 | `fanucLs.validation.checkLabels` | `true` | `LBL[n]` undefiniert/doppelt/unbenutzt |
 | `fanucLs.validation.checkMotion` | `true` | Geschwindigkeitseinheit, Überschleifen |
 | `fanucLs.validation.checkProgramName` | `true` | Programmname gegen Dateinamen |
-| `fanucLs.validation.checkCallTargets` | `true` | `CALL`-Ziele im Workspace suchen |
+| `fanucLs.validation.checkCallTargetsOnController` | `origin` | `CALL`-Ziele gegen die Programmliste der Steuerung prüfen: `origin` = Controller, von dem die Datei stammt, `all` = alle Controller, `off` = aus |
+| `fanucLs.validation.checkCallTargets` | `true` | `CALL`-Ziele im Workspace suchen, wenn keine Programmliste einer Steuerung vorliegt |
 | `fanucLs.validation.checkLineFormat` | `false` | strenges Zeilenformat |
 | `fanucLs.validation.maxLinearSpeed` | `2000` | Warnschwelle Bahngeschwindigkeit in mm/sec |
 | `fanucLs.validation.limits` | siehe unten | Obergrenzen je Registertyp; `0` = keine Prüfung |

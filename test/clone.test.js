@@ -49,3 +49,19 @@ test('Änderungen im Klon erkennen (#10)', async () => {
 		]
 	);
 });
+
+test('Herkunft aus Klon-Manifest ableiten (#9)', async () => {
+	const root = await fs.mkdtemp(path.join(os.tmpdir(), 'clone-'));
+	await fs.mkdir(path.join(root, 'md'));
+	await fs.mkdir(path.join(root, 'ud1', 'BACKUP'), { recursive: true });
+	await fs.writeFile(path.join(root, 'md', 'A.LS'), 'x');
+	await core.writeManifest(root, {
+		version: 1, controller: 'R1', host: 'h', created: '', updated: '',
+		devices: { md: 'md:', ud1: 'ud1:' },
+		files: { 'md/A.LS': { remotePath: 'md:A.LS', sha1: '', size: 0 } }
+	});
+	assert.deepStrictEqual(await core.originFromClone(path.join(root, 'md', 'A.LS')), { controller: 'R1', remotePath: 'md:A.LS' });
+	assert.deepStrictEqual(await core.originFromClone(path.join(root, 'md', 'NEU.LS')), { controller: 'R1', remotePath: 'md:NEU.LS' });
+	assert.deepStrictEqual(await core.originFromClone(path.join(root, 'ud1', 'BACKUP', 'X.LS')), { controller: 'R1', remotePath: 'ud1:BACKUP/X.LS' });
+	assert.strictEqual(await core.originFromClone(path.join(os.tmpdir(), 'irgendwo', 'X.LS')), undefined);
+});

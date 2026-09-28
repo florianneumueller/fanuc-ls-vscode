@@ -554,7 +554,22 @@
         "fanucLs.validation.checkCallTargets": {
           "type": "boolean",
           "default": true,
-          "description": "Bei CALL prüfen, ob im Workspace eine passende .ls-Datei existiert."
+          "description": "Bei CALL/RUN prüfen, ob im Workspace eine passende Programmdatei existiert (nur wenn keine Programmliste einer Steuerung vorliegt)."
+        },
+        "fanucLs.validation.checkCallTargetsOnController": {
+          "type": "string",
+          "enum": [
+            "origin",
+            "all",
+            "off"
+          ],
+          "default": "origin",
+          "enumDescriptions": [
+            "gegen den Controller, von dem die Datei stammt (Download, Öffnen oder Klon)",
+            "gegen alle konfigurierten Controller - das Programm muss auf mindestens einem vorhanden sein",
+            "keine Prüfung gegen Controller"
+          ],
+          "markdownDescription": "CALL/RUN-Ziele im Hintergrund gegen die Programmliste auf `md:` der Steuerung prüfen. Die Liste wird per FTP geladen und 5 Minuten zwischengespeichert; **FANUC: Aktualisieren** lädt sie neu."
         },
         "fanucLs.validation.checkLineFormat": {
           "type": "boolean",
