@@ -1,0 +1,322 @@
+{
+  "Programmgerüst (/PROG .. /END)": {
+    "prefix": "prog",
+    "description": "Vollständiges LS-Gerüst mit ATTR-, MN- und POS-Block",
+    "body": [
+      "/PROG  ${1:PROGRAMM}",
+      "/ATTR",
+      "OWNER\t\t= MNEDITOR;",
+      "COMMENT\t\t= \"${2:Kommentar}\";",
+      "PROG_SIZE\t= 0;",
+      "CREATE\t\t= DATE ${CURRENT_YEAR_SHORT}-${CURRENT_MONTH}-${CURRENT_DATE}  TIME ${CURRENT_HOUR}:${CURRENT_MINUTE}:${CURRENT_SECOND};",
+      "MODIFIED\t= DATE ${CURRENT_YEAR_SHORT}-${CURRENT_MONTH}-${CURRENT_DATE}  TIME ${CURRENT_HOUR}:${CURRENT_MINUTE}:${CURRENT_SECOND};",
+      "FILE_NAME\t= ;",
+      "VERSION\t\t= 0;",
+      "LINE_COUNT\t= 1;",
+      "MEMORY_SIZE\t= 0;",
+      "PROTECT\t\t= READ_WRITE;",
+      "TCD:  STACK_SIZE\t= 0,",
+      "      TASK_PRIORITY\t= 50,",
+      "      TIME_SLICE\t= 0,",
+      "      BUSY_LAMP_OFF\t= 0,",
+      "      ABORT_REQUEST\t= 0,",
+      "      PAUSE_REQUEST\t= 0;",
+      "DEFAULT_GROUP\t= 1,*,*,*,*;",
+      "CONTROL_CODE\t= 00000000 00000000;",
+      "/APPL",
+      "/MN",
+      "   1:  !${2:Kommentar} ;$0",
+      "/POS",
+      "/END",
+      ""
+    ]
+  },
+  "Positionsdatensatz /POS": {
+    "prefix": "pos",
+    "description": "Kartesischer Positionsdatensatz für den /POS-Block",
+    "body": [
+      "P[${1:1}]{",
+      "   GP1:",
+      "\tUF : ${4:1}, UT : ${5:1},\t\tCONFIG : '${6:N U T, 0, 0, 0}',",
+      "\tX =${7:     0.000}  mm,\tY =${8:     0.000}  mm,\tZ =${9:     0.000}  mm,",
+      "\tW =${10:     0.000} deg,\tP =${11:     0.000} deg,\tR =${12:     0.000} deg",
+      "};",
+      "$0"
+    ]
+  },
+  "Positionsdatensatz (Achswerte)": {
+    "prefix": "posj",
+    "description": "Positionsdatensatz in Achskoordinaten",
+    "body": [
+      "P[${1:1}]{",
+      "   GP1:",
+      "\tUF : ${2:1}, UT : ${3:1},",
+      "\tJ1=${4:   0.000} deg,\tJ2=${5:   0.000} deg,\tJ3=${6:   0.000} deg,",
+      "\tJ4=${7:   0.000} deg,\tJ5=${8:   0.000} deg,\tJ6=${9:   0.000} deg",
+      "};",
+      "$0"
+    ]
+  },
+  "Achsbewegung J": {
+    "prefix": "j",
+    "description": "Achsinterpolierte Bewegung",
+    "body": "J P[${1:1}] ${2:100}% ${3|FINE,CNT100,CNT50,CNT0|}    ;$0"
+  },
+  "Linearbewegung L": {
+    "prefix": "l",
+    "description": "Linearbewegung",
+    "body": "L P[${1:1}] ${2:500}mm/sec ${3|FINE,CNT100,CNT50,CNT0|}    ;$0"
+  },
+  "Kreisbewegung C": {
+    "prefix": "c",
+    "description": "Kreisbewegung über Zwischenpunkt",
+    "body": [
+      "C P[${1:1}]",
+      "  P[${2:2}] ${3:500}mm/sec ${4|FINE,CNT100,CNT50|}    ;$0"
+    ]
+  },
+  "Kreisbogen A": {
+    "prefix": "a",
+    "description": "Circular-Arc-Bewegung (A)",
+    "body": "A P[${1:1}] ${2:500}mm/sec ${3|FINE,CNT100|}    ;$0"
+  },
+  "Bewegung auf Positionsregister": {
+    "prefix": "lpr",
+    "description": "Linearbewegung auf ein Positionsregister",
+    "body": "L PR[${1:1}] ${2:500}mm/sec ${3|FINE,CNT100|}    ;$0"
+  },
+  "Bewegung mit Offset": {
+    "prefix": "loffset",
+    "description": "Linearbewegung mit Offset aus Positionsregister",
+    "body": "L P[${1:1}] ${2:500}mm/sec ${3|FINE,CNT100|} Offset,PR[${4:1}]    ;$0"
+  },
+  "Bewegung mit Skip": {
+    "prefix": "lskip",
+    "description": "Linearbewegung mit Skip-Bedingung",
+    "body": [
+      "  SKIP CONDITION DI[${1:1}]=${2|ON,OFF|} ;",
+      "L P[${3:1}] ${4:500}mm/sec ${5|FINE,CNT100|} Skip,LBL[${6:1}]    ;$0"
+    ]
+  },
+  "Bewegung mit TB/DB": {
+    "prefix": "ltb",
+    "description": "Linearbewegung mit Time-Before-Aktion",
+    "body": "L P[${1:1}] ${2:500}mm/sec ${3|FINE,CNT100|} TB ${4:0.5}sec,${5:DO[1]=ON}    ;$0"
+  },
+  "Kommentar": {
+    "prefix": "rem",
+    "description": "Bemerkung",
+    "body": "  !${1:Kommentar} ;$0"
+  },
+  "IF (einzeilig)": {
+    "prefix": "if",
+    "description": "Einzeilige IF-Anweisung mit Sprung",
+    "body": "  IF ${1:R[1]}${2|=,<>,<,<=,>,>=|}${3:1},JMP LBL[${4:1}] ;$0"
+  },
+  "IF ... ENDIF (Blockform)": {
+    "prefix": "ifblock",
+    "description": "Mehrzeilige IF-Struktur (Mixed Logic)",
+    "body": [
+      "  IF (${1:R[1]=1}) THEN ;",
+      "  ${2:  ! ... ;}",
+      "  ENDIF ;$0"
+    ]
+  },
+  "IF ... ELSE ... ENDIF": {
+    "prefix": "ifelse",
+    "description": "IF/ELSE/ENDIF-Struktur",
+    "body": [
+      "  IF (${1:R[1]=1}) THEN ;",
+      "  ${2:  ! wahr ;}",
+      "  ELSE ;",
+      "  ${3:  ! falsch ;}",
+      "  ENDIF ;$0"
+    ]
+  },
+  "SELECT/CASE": {
+    "prefix": "select",
+    "description": "SELECT-Verzweigung über ein Register",
+    "body": [
+      "  SELECT R[${1:1}]=${2:1},JMP LBL[${3:1}] ;",
+      "      =${4:2},JMP LBL[${5:2}] ;",
+      "      ELSE,JMP LBL[${6:99}] ;$0"
+    ]
+  },
+  "FOR ... ENDFOR": {
+    "prefix": "for",
+    "description": "Zählschleife",
+    "body": [
+      "  FOR R[${1:1}]=${2:1} TO ${3:10} ;",
+      "  ${4:  ! ... ;}",
+      "  ENDFOR ;$0"
+    ]
+  },
+  "Label": {
+    "prefix": "lbl",
+    "description": "Sprungmarke",
+    "body": "  LBL[${1:1}] ;$0"
+  },
+  "Label mit Namen": {
+    "prefix": "lbln",
+    "description": "Sprungmarke mit Klartextnamen",
+    "body": "  LBL[${1:1}:${2:Name}] ;$0"
+  },
+  "Sprung": {
+    "prefix": "jmp",
+    "description": "Unbedingter Sprung",
+    "body": "  JMP LBL[${1:1}] ;$0"
+  },
+  "Unterprogrammaufruf": {
+    "prefix": "call",
+    "description": "CALL mit optionalen Argumenten",
+    "body": "  CALL ${1:UNTERPROGRAMM} ;$0"
+  },
+  "Unterprogrammaufruf mit Argumenten": {
+    "prefix": "callarg",
+    "description": "CALL mit Argumentliste",
+    "body": "  CALL ${1:UNTERPROGRAMM}(${2:1}) ;$0"
+  },
+  "Programmende": {
+    "prefix": "end",
+    "description": "END-Befehl",
+    "body": "  END ;$0"
+  },
+  "Warten auf Zeit": {
+    "prefix": "waittime",
+    "description": "Zeitliches Warten",
+    "body": "  WAIT   ${1:1.00}(sec) ;$0"
+  },
+  "Warten auf Eingang": {
+    "prefix": "waitdi",
+    "description": "Warten auf digitalen Eingang",
+    "body": "  WAIT DI[${1:1}]=${2|ON,OFF|}    ;$0"
+  },
+  "Warten mit Timeout": {
+    "prefix": "waitto",
+    "description": "Warten auf Eingang mit Timeout-Sprung",
+    "body": "  WAIT DI[${1:1}]=${2|ON,OFF|} TIMEOUT,LBL[${3:99}]    ;$0"
+  },
+  "Digitalausgang setzen": {
+    "prefix": "do",
+    "description": "DO setzen",
+    "body": "  DO[${1:1}]=${2|ON,OFF|} ;$0"
+  },
+  "Digitalausgang pulsen": {
+    "prefix": "pulse",
+    "description": "DO als Impuls",
+    "body": "  DO[${1:1}]=PULSE,${2:0.5}sec ;$0"
+  },
+  "Gruppenausgang": {
+    "prefix": "go",
+    "description": "Gruppenausgang setzen",
+    "body": "  GO[${1:1}]=${2:R[1]} ;$0"
+  },
+  "Register setzen": {
+    "prefix": "r",
+    "description": "Register zuweisen oder rechnen",
+    "body": "  R[${1:1}]=${2:R[1]+1} ;$0"
+  },
+  "Positionsregister setzen": {
+    "prefix": "pr",
+    "description": "Positionsregister zuweisen",
+    "body": "  PR[${1:1}]=${2|LPOS,JPOS,UFRAME[1],UTOOL[1]|} ;$0"
+  },
+  "Positionsregister-Element": {
+    "prefix": "prel",
+    "description": "Einzelnes Element eines Positionsregisters",
+    "body": "  PR[${1:1},${2:3}]=${3:R[1]} ;$0"
+  },
+  "Werkzeug wählen": {
+    "prefix": "utool",
+    "description": "UTOOL_NUM setzen",
+    "body": "  UTOOL_NUM=${1:1} ;$0"
+  },
+  "Benutzerkoordinatensystem wählen": {
+    "prefix": "uframe",
+    "description": "UFRAME_NUM setzen",
+    "body": "  UFRAME_NUM=${1:1} ;$0"
+  },
+  "Nutzlast wählen": {
+    "prefix": "payload",
+    "description": "PAYLOAD setzen",
+    "body": "  PAYLOAD[${1:1}] ;$0"
+  },
+  "Override": {
+    "prefix": "ovr",
+    "description": "Geschwindigkeits-Override",
+    "body": "  OVERRIDE=${1:100}% ;$0"
+  },
+  "Meldung": {
+    "prefix": "msg",
+    "description": "Meldung am Teach Pendant",
+    "body": "  MESSAGE[${1:Text}] ;$0"
+  },
+  "Benutzeralarm": {
+    "prefix": "ualm",
+    "description": "Benutzeralarm auslösen",
+    "body": "  UALM[${1:1}] ;$0"
+  },
+  "Timer": {
+    "prefix": "timer",
+    "description": "Timer starten/stoppen/zurücksetzen",
+    "body": "  TIMER[${1:1}]=${2|START,STOP,RESET|} ;$0"
+  },
+  "Pause / Abort": {
+    "prefix": "pause",
+    "description": "Programm anhalten",
+    "body": "  ${1|PAUSE,ABORT|} ;$0"
+  },
+  "Kollisionserkennung": {
+    "prefix": "col",
+    "description": "Collision Guard schalten",
+    "body": "  COL DETECT ${1|ON,OFF|} ;$0"
+  },
+  "Schweißstart (Arc Start)": {
+    "prefix": "arcstart",
+    "description": "Arc Start mit Schweißprozedur",
+    "body": "  Arc Start[${1:1}] ;$0"
+  },
+  "Schweißende (Arc End)": {
+    "prefix": "arcend",
+    "description": "Arc End mit Endkraterprozedur",
+    "body": "  Arc End[${1:1}] ;$0"
+  },
+  "Schweißstart (Weld Start)": {
+    "prefix": "weldstart",
+    "description": "Weld Start mit Schedule",
+    "body": "  Weld Start[${1:1},${2:1}] ;$0"
+  },
+  "Schweißende (Weld End)": {
+    "prefix": "weldend",
+    "description": "Weld End mit Schedule",
+    "body": "  Weld End[${1:1},${2:1}] ;$0"
+  },
+  "Pendeln (Weave)": {
+    "prefix": "weave",
+    "description": "Pendelbewegung starten und beenden",
+    "body": [
+      "  Weave ${1|Sine,Circle,Figure 8,L|}[${2:1}] ;",
+      "  ${3:! Bahn ;}",
+      "  Weave End ;$0"
+    ]
+  },
+  "Schweißnaht-Baustein": {
+    "prefix": "seam",
+    "description": "Anfahren, Schweißen, Freifahren",
+    "body": [
+      "  UTOOL_NUM=${1:1} ;",
+      "  UFRAME_NUM=${2:1} ;",
+      "J P[${3:1}] 100% CNT100    ;",
+      "L P[${4:2}] ${5:200}mm/sec FINE    ;",
+      "  Arc Start[${6:1}] ;",
+      "L P[${7:3}] ${8:10}mm/sec FINE    ;",
+      "  Arc End[${9:1}] ;",
+      "L P[${10:4}] ${11:500}mm/sec CNT100    ;$0"
+    ]
+  },
+  "Systemvariable lesen/schreiben": {
+    "prefix": "sysvar",
+    "description": "Zugriff auf eine Systemvariable",
+    "body": "  ${1:$GROUP[1].$SPEEDLIM}=${2:R[1]} ;$0"
+  }
+}

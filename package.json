@@ -1,0 +1,517 @@
+{
+  "name": "fanuc-ls",
+  "displayName": "FANUC TP (LS)",
+  "description": "Syntaxhighlighting, Snippets, Syntaxprüfung und FTP-Dateitransfer für FANUC TP-Programme (.ls)",
+  "version": "0.2.0",
+  "publisher": "frontlinenetworks",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/florianneumueller/fanuc-ls-vscode.git"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets",
+    "Linters",
+    "Other"
+  ],
+  "keywords": [
+    "fanuc",
+    "roboter",
+    "robot",
+    "teach pendant",
+    "karel",
+    "ls",
+    "tp"
+  ],
+  "icon": "resources/icon.png",
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "onLanguage:fanuc-ls",
+    "onView:fanucLs.controllers"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "fanuc-ls",
+        "aliases": [
+          "FANUC TP",
+          "fanuc-ls"
+        ],
+        "extensions": [
+          ".ls",
+          ".LS"
+        ],
+        "firstLine": "^\\s*/PROG\\b",
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./resources/file-icon.svg",
+          "dark": "./resources/file-icon.svg"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "fanuc-ls",
+        "scopeName": "source.fanuc-ls",
+        "path": "./syntaxes/fanuc-ls.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "fanuc-ls",
+        "path": "./snippets/fanuc-ls.json"
+      }
+    ],
+    "configurationDefaults": {
+      "[fanuc-ls]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 4,
+        "editor.detectIndentation": false,
+        "editor.wordWrap": "off",
+        "files.trimTrailingWhitespace": false,
+        "files.eol": "\r\n",
+        "editor.formatOnType": true,
+        "editor.formatOnSave": false
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "fanucLs",
+          "title": "FANUC",
+          "icon": "resources/robot.svg"
+        }
+      ]
+    },
+    "views": {
+      "fanucLs": [
+        {
+          "id": "fanucLs.controllers",
+          "name": "Controller",
+          "contextualTitle": "FANUC Controller"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "fanucLs.controllers",
+        "contents": "Noch kein FANUC-Controller konfiguriert.\n[Controller hinzufügen](command:fanucLs.addController)\nDie Verbindung erfolgt per FTP (Port 21) direkt zur Robotersteuerung."
+      }
+    ],
+    "commands": [
+      {
+        "command": "fanucLs.addController",
+        "title": "Controller hinzufügen",
+        "category": "FANUC",
+        "icon": "$(add)"
+      },
+      {
+        "command": "fanucLs.editController",
+        "title": "Controller bearbeiten",
+        "category": "FANUC",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "fanucLs.removeController",
+        "title": "Controller entfernen",
+        "category": "FANUC",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "fanucLs.refresh",
+        "title": "Aktualisieren",
+        "category": "FANUC",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "fanucLs.setPassword",
+        "title": "Passwort hinterlegen",
+        "category": "FANUC",
+        "icon": "$(key)"
+      },
+      {
+        "command": "fanucLs.openRemoteFile",
+        "title": "Auf Controller öffnen",
+        "category": "FANUC"
+      },
+      {
+        "command": "fanucLs.downloadFile",
+        "title": "Herunterladen (Controller -> PC)",
+        "category": "FANUC",
+        "icon": "$(cloud-download)"
+      },
+      {
+        "command": "fanucLs.downloadDevice",
+        "title": "Ganzes Gerät sichern",
+        "category": "FANUC",
+        "icon": "$(archive)"
+      },
+      {
+        "command": "fanucLs.uploadCurrentFile",
+        "title": "Aktuelle Datei auf Controller laden",
+        "category": "FANUC",
+        "icon": "$(cloud-upload)"
+      },
+      {
+        "command": "fanucLs.uploadToDevice",
+        "title": "Datei hierher laden (PC -> Controller)",
+        "category": "FANUC",
+        "icon": "$(cloud-upload)"
+      },
+      {
+        "command": "fanucLs.deleteRemoteFile",
+        "title": "Auf Controller löschen",
+        "category": "FANUC",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "fanucLs.validate",
+        "title": "Syntax prüfen",
+        "category": "FANUC",
+        "icon": "$(check)"
+      },
+      {
+        "command": "fanucLs.renumber",
+        "title": "Zeilennummern neu nummerieren",
+        "category": "FANUC"
+      },
+      {
+        "command": "fanucLs.fixLineCount",
+        "title": "LINE_COUNT im ATTR-Block korrigieren",
+        "category": "FANUC"
+      },
+      {
+        "command": "fanucLs.newProgram",
+        "title": "Neues TP-Programm anlegen",
+        "category": "FANUC",
+        "icon": "$(new-file)"
+      },
+      {
+        "command": "fanucLs.showLog",
+        "title": "FTP-Protokoll anzeigen",
+        "category": "FANUC",
+        "icon": "$(output)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "fanucLs.addController",
+          "when": "view == fanucLs.controllers",
+          "group": "navigation@1"
+        },
+        {
+          "command": "fanucLs.refresh",
+          "when": "view == fanucLs.controllers",
+          "group": "navigation@2"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "fanucLs.refresh",
+          "when": "view == fanucLs.controllers && viewItem =~ /^(controller|device|dir)$/",
+          "group": "inline@1"
+        },
+        {
+          "command": "fanucLs.editController",
+          "when": "view == fanucLs.controllers && viewItem == controller",
+          "group": "1_config@1"
+        },
+        {
+          "command": "fanucLs.setPassword",
+          "when": "view == fanucLs.controllers && viewItem == controller",
+          "group": "1_config@2"
+        },
+        {
+          "command": "fanucLs.removeController",
+          "when": "view == fanucLs.controllers && viewItem == controller",
+          "group": "1_config@3"
+        },
+        {
+          "command": "fanucLs.uploadToDevice",
+          "when": "view == fanucLs.controllers && viewItem =~ /^(device|dir)$/",
+          "group": "inline@2"
+        },
+        {
+          "command": "fanucLs.downloadDevice",
+          "when": "view == fanucLs.controllers && viewItem =~ /^(device|dir)$/",
+          "group": "2_transfer@1"
+        },
+        {
+          "command": "fanucLs.downloadFile",
+          "when": "view == fanucLs.controllers && viewItem == file",
+          "group": "inline@1"
+        },
+        {
+          "command": "fanucLs.openRemoteFile",
+          "when": "view == fanucLs.controllers && viewItem == file",
+          "group": "2_transfer@1"
+        },
+        {
+          "command": "fanucLs.deleteRemoteFile",
+          "when": "view == fanucLs.controllers && viewItem == file",
+          "group": "3_danger@1"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "fanucLs.uploadCurrentFile",
+          "when": "resourceLangId == fanuc-ls",
+          "group": "navigation@1"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "fanucLs.renumber",
+          "when": "resourceLangId == fanuc-ls",
+          "group": "1_modification@10"
+        },
+        {
+          "command": "fanucLs.uploadCurrentFile",
+          "when": "resourceLangId == fanuc-ls",
+          "group": "1_modification@11"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "fanucLs.uploadCurrentFile",
+          "when": "resourceLangId == fanuc-ls",
+          "group": "7_transfer@1"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "fanucLs.uploadToDevice",
+          "when": "false"
+        },
+        {
+          "command": "fanucLs.downloadFile",
+          "when": "false"
+        },
+        {
+          "command": "fanucLs.downloadDevice",
+          "when": "false"
+        },
+        {
+          "command": "fanucLs.openRemoteFile",
+          "when": "false"
+        },
+        {
+          "command": "fanucLs.deleteRemoteFile",
+          "when": "false"
+        },
+        {
+          "command": "fanucLs.editController",
+          "when": "false"
+        },
+        {
+          "command": "fanucLs.removeController",
+          "when": "false"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "FANUC TP (LS)",
+      "properties": {
+        "fanucLs.controllers": {
+          "type": "array",
+          "default": [],
+          "markdownDescription": "Liste der FANUC-Controller. Passwörter werden **nicht** hier, sondern verschlüsselt im SecretStorage abgelegt (Befehl `FANUC: Passwort hinterlegen`).",
+          "scope": "machine-overridable",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "host"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Anzeigename, z. B. 'R1 Schweißzelle'"
+              },
+              "host": {
+                "type": "string",
+                "description": "IP-Adresse oder Hostname der Steuerung"
+              },
+              "port": {
+                "type": "number",
+                "default": 21,
+                "description": "FTP-Port (Standard 21)"
+              },
+              "user": {
+                "type": "string",
+                "default": "anonymous",
+                "description": "FTP-Benutzer. FANUC-Steuerungen akzeptieren meist 'anonymous' ohne Passwort."
+              },
+              "secure": {
+                "type": "boolean",
+                "default": false,
+                "description": "FTPS (explizit) verwenden. R-30iB unterstützt das in der Regel nicht."
+              },
+              "devices": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "default": [
+                  "md:",
+                  "fr:",
+                  "mc:",
+                  "ud1:"
+                ],
+                "description": "Geräte, die im Sidepanel angezeigt werden."
+              }
+            }
+          }
+        },
+        "fanucLs.ftp.timeout": {
+          "type": "number",
+          "default": 8000,
+          "description": "Timeout für FTP-Operationen in Millisekunden."
+        },
+        "fanucLs.ftp.verbose": {
+          "type": "boolean",
+          "default": false,
+          "description": "FTP-Protokoll in den Ausgabekanal 'FANUC FTP' schreiben. Hilfreich zur Fehlersuche bei Verbindungsproblemen."
+        },
+        "fanucLs.ftp.downloadDirectory": {
+          "type": "string",
+          "default": "",
+          "description": "Zielordner für Downloads. Leer = Unterordner 'fanuc' im ersten Workspace-Ordner."
+        },
+        "fanucLs.ftp.confirmUpload": {
+          "type": "boolean",
+          "default": true,
+          "description": "Vor dem Überschreiben einer Datei auf der Steuerung nachfragen."
+        },
+        "fanucLs.ftp.validateBeforeUpload": {
+          "type": "boolean",
+          "default": true,
+          "description": "Vor dem Upload die Syntaxprüfung ausführen und bei Fehlern warnen."
+        },
+        "fanucLs.format.autoNumber": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Beim Beginn einer neuen Zeile im `/MN`-Block automatisch die nächste Zeilennummer setzen und den Rest des Blocks nachnummerieren. Setzt `editor.formatOnType` voraus (ist für `[fanuc-ls]` voreingestellt)."
+        },
+        "fanucLs.format.normalizeSpacing": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Beim Nummerieren auch den Abstand hinter dem Doppelpunkt vereinheitlichen: Bewegungsbefehle direkt anschließend, alle anderen Anweisungen mit zwei Leerzeichen."
+        },
+        "fanucLs.validation.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Syntaxprüfung für .ls-Dateien aktivieren."
+        },
+        "fanucLs.validation.run": {
+          "type": "string",
+          "enum": [
+            "onType",
+            "onSave"
+          ],
+          "default": "onType",
+          "description": "Wann die Prüfung läuft."
+        },
+        "fanucLs.validation.checkLineNumbers": {
+          "type": "boolean",
+          "default": true,
+          "description": "Fortlaufende Zeilennummern im /MN-Block prüfen."
+        },
+        "fanucLs.validation.checkLineCount": {
+          "type": "boolean",
+          "default": true,
+          "description": "LINE_COUNT im /ATTR-Block gegen die tatsächliche Zeilenzahl prüfen."
+        },
+        "fanucLs.validation.checkPositions": {
+          "type": "boolean",
+          "default": true,
+          "description": "Verwendete P[n] gegen die Definitionen im /POS-Block prüfen."
+        },
+        "fanucLs.validation.reportUnusedPositions": {
+          "type": "boolean",
+          "default": true,
+          "description": "Nicht verwendete Positionen im /POS-Block melden."
+        },
+        "fanucLs.validation.checkLabels": {
+          "type": "boolean",
+          "default": true,
+          "description": "Sprungziele LBL[n] prüfen (undefiniert, doppelt, unbenutzt)."
+        },
+        "fanucLs.validation.checkMotion": {
+          "type": "boolean",
+          "default": true,
+          "description": "Bewegungsbefehle prüfen (Geschwindigkeitseinheit, Überschleifen)."
+        },
+        "fanucLs.validation.checkProgramName": {
+          "type": "boolean",
+          "default": true,
+          "description": "Programmnamen im /PROG-Header gegen den Dateinamen prüfen."
+        },
+        "fanucLs.validation.checkCallTargets": {
+          "type": "boolean",
+          "default": true,
+          "description": "Bei CALL prüfen, ob im Workspace eine passende .ls-Datei existiert."
+        },
+        "fanucLs.validation.checkLineFormat": {
+          "type": "boolean",
+          "default": false,
+          "description": "Strenges Zeilenformat prüfen (4-stellige rechtsbündige Nummer, zwei Leerzeichen nach dem Doppelpunkt bei Nicht-Bewegungsbefehlen)."
+        },
+        "fanucLs.validation.maxLinearSpeed": {
+          "type": "number",
+          "default": 2000,
+          "description": "Warnschwelle für lineare Bahngeschwindigkeit in mm/sec."
+        },
+        "fanucLs.validation.limits": {
+          "type": "object",
+          "default": {
+            "R": 200,
+            "PR": 100,
+            "P": 0,
+            "DI": 512,
+            "DO": 512,
+            "RI": 8,
+            "RO": 8,
+            "GI": 10,
+            "GO": 10,
+            "AI": 64,
+            "AO": 64,
+            "SI": 16,
+            "SO": 16,
+            "UI": 18,
+            "UO": 20,
+            "F": 1024,
+            "M": 500,
+            "TIMER": 10,
+            "AR": 10,
+            "SR": 100,
+            "UTOOL": 10,
+            "UFRAME": 10,
+            "PAYLOAD": 10
+          },
+          "markdownDescription": "Obergrenzen je Registertyp für die Bereichsprüfung. `0` deaktiviert die Prüfung für diesen Typ. Werte an die Konfiguration der Steuerung anpassen."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "dependencies": {
+    "basic-ftp": "^5.0.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^4.0.0",
+    "typescript": "^5.4.0"
+  }
+}

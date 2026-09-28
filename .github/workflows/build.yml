@@ -1,0 +1,42 @@
+name: Build VSIX
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run compile
+
+      - name: VSIX paketieren
+        run: npx vsce package --out fanuc-ls-${{ github.sha }}.vsix
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fanuc-ls-vsix
+          path: '*.vsix'
+
+      - name: GitHub Release anlegen (nur bei Tag v*)
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mv fanuc-ls-${{ github.sha }}.vsix fanuc-ls-${GITHUB_REF_NAME#v}.vsix
+          gh release create "$GITHUB_REF_NAME" fanuc-ls-*.vsix --generate-notes

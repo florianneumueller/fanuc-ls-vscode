@@ -1,0 +1,188 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "FANUC TP",
+  "scopeName": "source.fanuc-ls",
+  "patterns": [
+    { "include": "#posSection" },
+    { "include": "#progHeader" },
+    { "include": "#section" },
+    { "include": "#comment" },
+    { "include": "#attribute" },
+    { "include": "#motionLine" },
+    { "include": "#lineNumber" },
+    { "include": "#string" },
+    { "include": "#weld" },
+    { "include": "#controlKeyword" },
+    { "include": "#instruction" },
+    { "include": "#label" },
+    { "include": "#io" },
+    { "include": "#register" },
+    { "include": "#position" },
+    { "include": "#sysvar" },
+    { "include": "#speed" },
+    { "include": "#termination" },
+    { "include": "#motionOption" },
+    { "include": "#constant" },
+    { "include": "#number" },
+    { "include": "#operator" },
+    { "include": "#terminator" }
+  ],
+  "repository": {
+    "progHeader": {
+      "match": "^\\s*(/PROG)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+      "captures": {
+        "1": { "name": "keyword.control.section.fanuc" },
+        "2": { "name": "entity.name.function.program.fanuc" }
+      }
+    },
+    "section": {
+      "match": "^\\s*/(PROG|ATTR|APPL|MN|POS|END|TP|BCKEDT)\\b",
+      "name": "keyword.control.section.fanuc"
+    },
+    "comment": {
+      "patterns": [
+        {
+          "match": "!.*?(?=\\s*;)",
+          "name": "comment.line.remark.fanuc"
+        },
+        {
+          "match": "!.*$",
+          "name": "comment.line.remark.fanuc"
+        },
+        {
+          "match": "--eg:.*$",
+          "name": "comment.line.double-dash.fanuc"
+        }
+      ]
+    },
+    "string": {
+      "patterns": [
+        { "begin": "\"", "end": "\"", "name": "string.quoted.double.fanuc" },
+        { "begin": "'", "end": "'", "name": "string.quoted.single.fanuc" }
+      ]
+    },
+    "attribute": {
+      "match": "^\\s*(OWNER|COMMENT|PROG_SIZE|CREATE|MODIFIED|FILE_NAME|VERSION|LINE_COUNT|MEMORY_SIZE|PROTECT|TCD|STACK_SIZE|TASK_PRIORITY|TIME_SLICE|BUSY_LAMP_OFF|ABORT_REQUEST|PAUSE_REQUEST|DEFAULT_GROUP|CONTROL_CODE|APPLICATION|LOCAL_VARIABLES)\\b",
+      "name": "variable.other.attribute.fanuc"
+    },
+    "lineNumber": {
+      "match": "^(\\s*)(\\d+)(:)",
+      "captures": {
+        "2": { "name": "constant.numeric.line.fanuc" },
+        "3": { "name": "punctuation.separator.line.fanuc" }
+      }
+    },
+    "motionLine": {
+      "match": "^(\\s*)(\\d+)(:)(\\s*)(J|L|C|A|S)(?=\\s+(P|PR)\\[)",
+      "captures": {
+        "2": { "name": "constant.numeric.line.fanuc" },
+        "3": { "name": "punctuation.separator.line.fanuc" },
+        "5": { "name": "keyword.control.motion.fanuc" }
+      }
+    },
+    "weld": {
+      "patterns": [
+        {
+          "match": "\\b(Weld\\s+Start|Weld\\s+End|Weld\\s+Point|Arc\\s+Start|Arc\\s+End|Wave\\s+Start|Wave\\s+End|Weave\\s+End|Weave\\s+(?:Sine|Circle|Figure\\s*8|Sine2|Circle2|L|Figure8))",
+          "name": "support.function.weld.fanuc"
+        },
+        {
+          "match": "\\b(WELD_SPEED|WELD_START|WELD_END|AW\\d*|RSR|TAST|THRU|Touch\\s+Start|Touch\\s+End|Retract|Preflow|Postflow)\\b",
+          "name": "support.function.weld.fanuc"
+        }
+      ]
+    },
+    "controlKeyword": {
+      "match": "(?<![A-Za-z0-9_\\[])(IF|ELSE|ENDIF|SELECT|ENDSELECT|CASE|FOR|ENDFOR|TO|DOWNTO|JMP|CALL|RUN|END|WAIT|PAUSE|ABORT|SEMI|MONITOR|MONITOR\\s+END|RETURN|SKIP\\s+CONDITION|OFFSET\\s+CONDITION|TOOL_OFFSET\\s+CONDITION|RESUME_PROG|ERR_PROG|MAINT_PROG|SINGULARITY|LOCK\\s+PREG|UNLOCK\\s+PREG|COL\\s+DETECT|COL\\s+GUARD\\s+ADJUST|JOINT_MAX_SPEED|LINEAR_MAX_SPEED|CNT_SPEED|OVERRIDE|PAYLOAD|UTOOL_NUM|UFRAME_NUM|UTOOL|UFRAME|MESSAGE|USERALARM|UALM|TIMER|TIMER_OVERFLOW|PULSE|OFFSET|TOOL_OFFSET|INC|FINE_SPEED)(?![A-Za-z0-9_])",
+      "name": "keyword.control.fanuc"
+    },
+    "instruction": {
+      "match": "(?<![A-Za-z0-9_])(ON|OFF|START|STOP|RESET|ENABLE|DISABLE|TRUE|FALSE|AND|OR|NOT|MOD|DIV|LPOS|JPOS|UTOOL|UFRAME|GET|SET)(?![A-Za-z0-9_])",
+      "name": "keyword.other.fanuc"
+    },
+    "label": {
+      "match": "\\b(LBL)(?=\\[)",
+      "name": "entity.name.label.fanuc"
+    },
+    "io": {
+      "match": "\\b(DI|DO|RI|RO|AI|AO|GI|GO|SI|SO|UI|UO|WI|WO|WDI|WDO|F|M)(?=\\[)",
+      "name": "support.variable.io.fanuc"
+    },
+    "register": {
+      "match": "\\b(R|PR|AR|SR|VR|STR_REG|POS_REG|TIMER|TIMER_OVERFLOW)(?=\\[)",
+      "name": "support.variable.register.fanuc"
+    },
+    "position": {
+      "match": "(?<![A-Za-z0-9_])(P)(?=\\[)",
+      "name": "support.variable.position.fanuc"
+    },
+    "sysvar": {
+      "match": "\\$[A-Za-z_][A-Za-z0-9_\\.]*",
+      "name": "variable.language.sysvar.fanuc"
+    },
+    "speed": {
+      "match": "\\b(\\d+(?:\\.\\d+)?)\\s*(mm/sec|cm/min|inch/min|deg/sec|msec|sec|%)",
+      "captures": {
+        "1": { "name": "constant.numeric.fanuc" },
+        "2": { "name": "keyword.other.unit.fanuc" }
+      }
+    },
+    "termination": {
+      "match": "\\b(FINE|CNT\\s*\\d{1,3}|CD|CR\\s*\\d+(?:\\.\\d+)?)\\b",
+      "name": "constant.language.termination.fanuc"
+    },
+    "motionOption": {
+      "match": "\\b(ACC\\s*-?\\d+|PTH|Wjnt|RTCP|INC|COORD|EV\\s*\\d+%?|IND_EV|TB|DB|AP_LD\\d*|RT_LD\\d*|Skip,|Offset,|Tool_Offset,|VOFFSET,|BREAK|TIME\\s+BEFORE|TIME\\s+AFTER|DISTANCE\\s+BEFORE)\\b",
+      "name": "storage.modifier.motion-option.fanuc"
+    },
+    "constant": {
+      "match": "\\b(MAX_SPEED|max_speed|READ_WRITE|READ_ONLY|PROTECT|MNEDITOR|ASCII)\\b",
+      "name": "constant.language.fanuc"
+    },
+    "number": {
+      "match": "(?<![A-Za-z0-9_])-?\\d+(\\.\\d+)?(?![A-Za-z0-9_])",
+      "name": "constant.numeric.fanuc"
+    },
+    "operator": {
+      "match": "(<=|>=|<>|!=|=|<|>|\\+|-|\\*|/)",
+      "name": "keyword.operator.fanuc"
+    },
+    "terminator": {
+      "match": ";",
+      "name": "punctuation.terminator.fanuc"
+    },
+    "posSection": {
+      "begin": "^\\s*(/POS)\\s*$",
+      "beginCaptures": {
+        "1": { "name": "keyword.control.section.fanuc" }
+      },
+      "end": "(?=^\\s*/(END|MN|ATTR|APPL|PROG)\\b)",
+      "name": "meta.section.pos.fanuc",
+      "patterns": [
+        {
+          "match": "^\\s*(P|PR)(\\[)\\s*(\\d+)\\s*(?::\\s*(\"[^\"]*\"))?\\s*(\\])",
+          "captures": {
+            "1": { "name": "support.variable.position.fanuc" },
+            "3": { "name": "entity.name.tag.position-id.fanuc" },
+            "4": { "name": "string.quoted.double.fanuc" }
+          }
+        },
+        { "include": "#string" },
+        {
+          "match": "\\b(GP\\d+|UF|UT|CONFIG)\\b",
+          "name": "variable.other.poskey.fanuc"
+        },
+        {
+          "match": "(?<![A-Za-z0-9_])([XYZWPR]|E\\d|J\\d)\\s*(?==)",
+          "name": "variable.parameter.poscomponent.fanuc"
+        },
+        {
+          "match": "\\b(mm|deg)\\b",
+          "name": "keyword.other.unit.fanuc"
+        },
+        { "include": "#number" },
+        { "include": "#operator" }
+      ]
+    }
+  }
+}
