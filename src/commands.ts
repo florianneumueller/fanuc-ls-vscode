@@ -234,43 +234,39 @@ export function registerCommands(
 			}
 		}
 
-		const origin = getOrigin(context, doc.uri.fsPath);
-		const controllers = getControllers();
-		let controller = origin ? controllers.find((c) => c.name === origin.controller) : undefined;
-		let remotePath = origin?.remotePath;
-
-		if (controller && remotePath) {
-			const choice = await vscode.window.showQuickPick(
-				[
-					{ label: `$(cloud-upload) Zurück nach ${controller.name}`, detail: remotePath, value: 'origin' },
-					{ label: '$(list-selection) Anderes Ziel wählen', value: 'other' }
-				],
-				{ placeHolder: 'Ziel für den Upload' }
-			);
-			if (!choice) {
-				return;
-			}
-			if (choice.value === 'other') {
-				controller = undefined;
-				remotePath = undefined;
-			}
+		const target = await pickRemoteTarget(doc.uri.fsPath, 'upload');
+		if (!target) {
+			return;
 		}
-
-		if (!controller) {
-			controller = await pickController();
-			if (!controller) {
-				return;
-			}
-			const device = await pickDevice(controller);
-			if (!device) {
-				return;
-			}
-			remotePath = ftp.joinRemote(device, path.basename(doc.uri.fsPath));
-		}
-
-		await uploadLocalFile(doc.uri.fsPath, controller, undefined, remotePath);
-		rememberOrigin(context, doc.uri.fsPath, { controller: controller.name, remotePath: remotePath! });
+		await uploadLocalFile(doc.uri.fsPath, target.controller, undefined, target.remotePath);
+		rememberOrigin(context, doc.uri.fsPath, { controller: target.controller.name, remotePath: target.remotePath });
 		tree.refresh();
+	});
+
+	// --- Vergleich lokal <-> Controller ---------------------------------------
+
+	reg('fanucLs.compareWithController', async (uri?: vscode.Uri) => {
+		const localUri = uri ?? vscode.window.activeTextEditor?.document.uri;
+		if (!localUri || localUri.scheme !== 'file') {
+			vscode.window.showWarningMessage('Bitte eine gespeicherte Datei öffnen.');
+			return;
+		}
+		const target = await pickRemoteTarget(localUri.fsPath, 'compare');
+		if (!target) {
+			return;
+		}
+		await showDiff(target.controller, target.remotePath, localUri.fsPath);
+	});
+
+	reg('fanucLs.compareRemoteWithLocal', async (node?: FileNode) => {
+		if (!node) {
+			return;
+		}
+		const local = await findLocalCopy(node);
+		if (!local) {
+			return;
+		}
+		await showDiff(node.controller, node.remotePath, local);
 	});
 
 	reg('fanucLs.deleteRemoteFile', async (node?: FileNode) => {
@@ -393,6 +389,94 @@ export function registerCommands(
 			ftp.uploadFile(controller, secrets, localPath, remotePath)
 		);
 		vscode.window.showInformationMessage(`${path.basename(localPath)} wurde nach ${remotePath} geladen.`);
+	}
+
+	/**
+	 * Ermittelt Controller und Remote-Pfad für eine lokale Datei: bevorzugt die gemerkte
+	 * Herkunft, sonst Auswahl von Controller und Gerät.
+	 */
+	async function pickRemoteTarget(
+		localPath: string,
+		purpose: 'upload' | 'compare'
+	): Promise<{ controller: ControllerConfig; remotePath: string } | undefined> {
+		const origin = getOrigin(context, localPath);
+		const known = origin ? getControllers().find((c) => c.name === origin.controller) : undefined;
+		if (known && origin) {
+			if (purpose === 'compare') {
+				return { controller: known, remotePath: origin.remotePath };
+			}
+			const choice = await vscode.window.showQuickPick(
+				[
+					{ label: `$(cloud-upload) Zurück nach ${known.name}`, detail: origin.remotePath, value: 'origin' },
+					{ label: '$(list-selection) Anderes Ziel wählen', value: 'other' }
+				],
+				{ placeHolder: 'Ziel für den Upload' }
+			);
+			if (!choice) {
+				return undefined;
+			}
+			if (choice.value === 'origin') {
+				return { controller: known, remotePath: origin.remotePath };
+			}
+		}
+		const controller = await pickController();
+		if (!controller) {
+			return undefined;
+		}
+		const device = await pickDevice(controller);
+		if (!device) {
+			return undefined;
+		}
+		return { controller, remotePath: ftp.joinRemote(device, path.basename(localPath)) };
+	}
+
+	/** Lädt die Datei vom Controller in ein temporäres Verzeichnis und öffnet den Diff-Editor. */
+	async function showDiff(controller: ControllerConfig, remotePath: string, localPath: string): Promise<void> {
+		const name = remotePath.replace(/^.*[:/]/, '');
+		const dir = path.join(os.tmpdir(), 'fanuc-ls', 'compare', sanitize(controller.name), sanitize(remotePath.replace(/[^:/]*$/, '')));
+		const remoteCopy = path.join(dir, name);
+		await withProgress(`${name} wird zum Vergleich geladen`, async () => {
+			await fs.mkdir(dir, { recursive: true });
+			await ftp.downloadToFile(controller, secrets, remotePath, remoteCopy);
+		});
+		const [a, b] = await Promise.all([fs.readFile(remoteCopy), fs.readFile(localPath)]);
+		if (normalizeEol(a) === normalizeEol(b)) {
+			vscode.window.showInformationMessage(`${name}: lokale Datei und ${controller.name} sind identisch.`);
+			return;
+		}
+		await vscode.commands.executeCommand(
+			'vscode.diff',
+			vscode.Uri.file(remoteCopy),
+			vscode.Uri.file(localPath),
+			`${name}: ${controller.name} ↔ lokal`
+		);
+	}
+
+	/** Sucht zur Datei auf dem Controller die lokale Kopie (Herkunft, Workspace oder Dateiauswahl). */
+	async function findLocalCopy(node: FileNode): Promise<string | undefined> {
+		const origins = context.workspaceState.get<Record<string, Origin>>(ORIGIN_KEY, {});
+		const byOrigin = Object.entries(origins)
+			.filter(([, o]) => o.controller === node.controller.name && o.remotePath === node.remotePath)
+			.map(([p]) => p)
+			.filter((p) => !p.startsWith(os.tmpdir()));
+		const found = await vscode.workspace.findFiles(`**/${node.entry.name}`, '**/node_modules/**', 50);
+		const candidates = [...new Set([...byOrigin, ...found.map((u) => u.fsPath)])];
+		if (candidates.length === 1) {
+			return candidates[0];
+		}
+		if (candidates.length > 1) {
+			const picked = await vscode.window.showQuickPick(
+				candidates.map((p) => ({ label: path.basename(p), description: vscode.workspace.asRelativePath(p), value: p })),
+				{ placeHolder: 'Lokale Datei für den Vergleich wählen' }
+			);
+			return picked?.value;
+		}
+		const picked = await vscode.window.showOpenDialog({
+			canSelectMany: false,
+			openLabel: 'Vergleichen',
+			title: `Keine lokale Kopie von ${node.entry.name} gefunden - Datei wählen`
+		});
+		return picked?.[0]?.fsPath;
 	}
 
 	async function pickController(): Promise<ControllerConfig | undefined> {
@@ -544,6 +628,10 @@ function rememberOrigin(context: vscode.ExtensionContext, localPath: string, ori
 
 function getOrigin(context: vscode.ExtensionContext, localPath: string): Origin | undefined {
 	return context.workspaceState.get<Record<string, Origin>>(ORIGIN_KEY, {})[localPath];
+}
+
+function normalizeEol(buf: Buffer): string {
+	return buf.toString('latin1').replace(/\r\n/g, '\n');
 }
 
 function sanitize(s: string): string {

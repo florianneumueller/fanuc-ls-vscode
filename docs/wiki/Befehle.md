@@ -14,6 +14,7 @@ Alle Befehle sind über die Befehlspalette (`F1` oder `Strg+Umschalt+P`) mit dem
 | FANUC: Passwort hinterlegen | FTP-Passwort im SecretStorage speichern |
 | FANUC: Aktualisieren | Controller-Ansicht neu laden |
 | FANUC: Aktuelle Datei auf Controller laden | Upload der offenen Datei |
+| FANUC: Mit Controller vergleichen | Diff zwischen offener Datei und Steuerung |
 | FANUC: FTP-Protokoll anzeigen | Ausgabekanal *FANUC FTP* öffnen |
 
 Weitere Befehle stehen nur im Kontextmenü der Controller-Ansicht zur Verfügung, siehe [[Controller und FTP]].

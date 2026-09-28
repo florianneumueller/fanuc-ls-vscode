@@ -201,6 +201,18 @@
         "title": "FTP-Protokoll anzeigen",
         "category": "FANUC",
         "icon": "$(output)"
+      },
+      {
+        "command": "fanucLs.compareWithController",
+        "title": "Mit Controller vergleichen",
+        "category": "FANUC",
+        "icon": "$(diff)"
+      },
+      {
+        "command": "fanucLs.compareRemoteWithLocal",
+        "title": "Mit lokaler Datei vergleichen",
+        "category": "FANUC",
+        "icon": "$(diff)"
       }
     ],
     "menus": {
@@ -261,6 +273,11 @@
           "command": "fanucLs.deleteRemoteFile",
           "when": "view == fanucLs.controllers && viewItem == file",
           "group": "3_danger@1"
+        },
+        {
+          "command": "fanucLs.compareRemoteWithLocal",
+          "when": "view == fanucLs.controllers && viewItem == file",
+          "group": "2_transfer@2"
         }
       ],
       "editor/title": [
@@ -268,6 +285,11 @@
           "command": "fanucLs.uploadCurrentFile",
           "when": "resourceLangId == fanuc-ls",
           "group": "navigation@1"
+        },
+        {
+          "command": "fanucLs.compareWithController",
+          "when": "resourceLangId == fanuc-ls && resourceScheme == file",
+          "group": "navigation@2"
         }
       ],
       "editor/context": [
@@ -280,6 +302,11 @@
           "command": "fanucLs.uploadCurrentFile",
           "when": "resourceLangId == fanuc-ls",
           "group": "1_modification@11"
+        },
+        {
+          "command": "fanucLs.compareWithController",
+          "when": "resourceLangId == fanuc-ls && resourceScheme == file",
+          "group": "1_modification@12"
         }
       ],
       "explorer/context": [
@@ -287,6 +314,11 @@
           "command": "fanucLs.uploadCurrentFile",
           "when": "resourceLangId == fanuc-ls",
           "group": "7_transfer@1"
+        },
+        {
+          "command": "fanucLs.compareWithController",
+          "when": "resourceLangId == fanuc-ls",
+          "group": "7_transfer@2"
         }
       ],
       "commandPalette": [
@@ -316,6 +348,10 @@
         },
         {
           "command": "fanucLs.removeController",
+          "when": "false"
+        },
+        {
+          "command": "fanucLs.compareRemoteWithLocal",
           "when": "false"
         }
       ]

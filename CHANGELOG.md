@@ -1,5 +1,10 @@
 # Änderungen
 
+## Unveröffentlicht
+
+- Programmnamen dürfen Ziffern enthalten, auch am Anfang (#3)
+- Vergleich lokale Datei ↔ Controller im Diff-Editor, in beide Richtungen (#8)
+
 ## 0.3.0
 
 - GitHub-Copilot-Agent-Skill `fanuc-tp-programmierung` mit Befehlsreferenz, geprüften Beispielprogrammen, Programmvorlage sowie Format- und Sicherheitsregeln
