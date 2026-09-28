@@ -22,6 +22,7 @@ import {
 import * as ftp from './ftp';
 import { fixLineCountEdit, renumberEdits, touchModifiedEdit } from './edits';
 import { isValidProgramName } from './parser';
+import { registerCloneCommands } from './clone';
 
 const ORIGIN_KEY = 'fanucLs.origins';
 
@@ -355,6 +356,22 @@ export function registerCommands(
 	});
 
 	reg('fanucLs.showLog', () => ftp.showLog());
+
+	registerCloneCommands(context, tree, {
+		withProgress,
+		rememberOrigin: (local, origin) => rememberOrigin(context, local, origin),
+		showDiff,
+		pickController,
+		resolveDownloadDir,
+		countErrors: async (file) => {
+			if (!/\.ls$/i.test(file)) {
+				return 0;
+			}
+			const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(file));
+			await runValidation(doc);
+			return (diagnostics.get(doc.uri) ?? []).filter((d) => d.severity === vscode.DiagnosticSeverity.Error).length;
+		}
+	});
 
 	// --- Hilfsfunktionen -----------------------------------------------------
 

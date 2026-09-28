@@ -44,6 +44,22 @@ Details:
 - **Vor dem Upload** läuft die Syntaxprüfung (`fanucLs.ftp.validateBeforeUpload`). Bei Fehlern kommt eine Rückfrage. Vor dem Überschreiben wird ebenfalls nachgefragt (`fanucLs.ftp.confirmUpload`).
 - Pro Steuerung wird **nur eine FTP-Verbindung gleichzeitig** geöffnet, weil FANUC-Steuerungen nur sehr wenige Sitzungen zulassen.
 
+## Controller klonen
+
+Mit einem Klon arbeitet man wie mit einer lokalen Kopie der Steuerung: alles herunterladen, in Ruhe bearbeiten, Änderungen prüfen und nur das Geänderte zurückspielen.
+
+1. **Klonen:** Rechtsklick auf den Controller → **Controller klonen / Klon aktualisieren**, dann die Geräte wählen (Standard: `md:`). Die Dateien landen im Download-Ordner unter `<Controllername>/<Gerät>/…`, z. B. `fanuc/R1_Schweisszelle/md/SCHWEISS1.LS`. Welche Dateitypen geladen werden, legt `fanucLs.clone.fileTypes` fest (Standard: `ls`, `tp`, `vr`, `pc`, `dt`).
+2. **Bearbeiten:** ganz normal im Editor.
+3. **Änderungen anzeigen:** **FANUC: Klon: Änderungen anzeigen** (auch über den Button in der Controller-Ansicht oder per Rechtsklick auf den Klon-Ordner). Die Liste zeigt geänderte, neue und lokal gelöschte Dateien. Ein Klick auf eine geänderte Datei öffnet den Vergleich mit der Steuerung.
+4. **Übertragen:** **FANUC: Klon: Änderungen auf Controller übertragen**. Die Dateien lassen sich einzeln abwählen. Vor dem Upload laufen die Syntaxprüfung und eine Sicherheitsabfrage.
+
+Zum Schutz vor verlorenen Änderungen:
+- Vor jedem Upload wird geprüft, ob die Datei **auf der Steuerung seit dem Klonen geändert** wurde, etwa am Teach Pendant. Solche Dateien werden nicht überschrieben, sondern als Konflikt gemeldet und lassen sich direkt vergleichen.
+- **Klon aktualisieren** (erneut klonen) lädt den aktuellen Stand der Steuerung, überschreibt aber keine lokal geänderten Dateien.
+- Lokal gelöschte Dateien werden **nicht** auf der Steuerung gelöscht.
+
+Der Stand des letzten Abgleichs steht in `.fanuc-clone.json` im Klon-Ordner (Remote-Pfad und Prüfsumme je Datei). Die Datei gehört zum Klon und sollte nicht gelöscht werden. Wer den Klon mit Git versioniert, kann sie mit einchecken.
+
 ## Fehlersuche
 
 - `fanucLs.ftp.verbose` einschalten und **FANUC: FTP-Protokoll anzeigen** aufrufen. Dort steht die komplette FTP-Kommunikation.

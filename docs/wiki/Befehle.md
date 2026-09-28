@@ -15,6 +15,9 @@ Alle Befehle sind über die Befehlspalette (`F1` oder `Strg+Umschalt+P`) mit dem
 | FANUC: Aktualisieren | Controller-Ansicht neu laden |
 | FANUC: Aktuelle Datei auf Controller laden | Upload der offenen Datei |
 | FANUC: Mit Controller vergleichen | Diff zwischen offener Datei und Steuerung |
+| FANUC: Controller klonen / Klon aktualisieren | Geräte einer Steuerung in einen lokalen Ordner laden |
+| FANUC: Klon: Änderungen anzeigen | geänderte, neue und gelöschte Dateien im Klon |
+| FANUC: Klon: Änderungen auf Controller übertragen | geänderte Dateien hochladen, mit Konfliktprüfung |
 | FANUC: FTP-Protokoll anzeigen | Ausgabekanal *FANUC FTP* öffnen |
 
 Weitere Befehle stehen nur im Kontextmenü der Controller-Ansicht zur Verfügung, siehe [[Controller und FTP]].

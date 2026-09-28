@@ -213,6 +213,24 @@
         "title": "Mit lokaler Datei vergleichen",
         "category": "FANUC",
         "icon": "$(diff)"
+      },
+      {
+        "command": "fanucLs.clone.create",
+        "title": "Controller klonen / Klon aktualisieren",
+        "category": "FANUC",
+        "icon": "$(repo-clone)"
+      },
+      {
+        "command": "fanucLs.clone.showChanges",
+        "title": "Klon: Änderungen anzeigen",
+        "category": "FANUC",
+        "icon": "$(git-compare)"
+      },
+      {
+        "command": "fanucLs.clone.pushChanges",
+        "title": "Klon: Änderungen auf Controller übertragen",
+        "category": "FANUC",
+        "icon": "$(cloud-upload)"
       }
     ],
     "menus": {
@@ -226,6 +244,11 @@
           "command": "fanucLs.refresh",
           "when": "view == fanucLs.controllers",
           "group": "navigation@2"
+        },
+        {
+          "command": "fanucLs.clone.showChanges",
+          "when": "view == fanucLs.controllers",
+          "group": "navigation@3"
         }
       ],
       "view/item/context": [
@@ -278,6 +301,11 @@
           "command": "fanucLs.compareRemoteWithLocal",
           "when": "view == fanucLs.controllers && viewItem == file",
           "group": "2_transfer@2"
+        },
+        {
+          "command": "fanucLs.clone.create",
+          "when": "view == fanucLs.controllers && viewItem == controller",
+          "group": "2_transfer@1"
         }
       ],
       "editor/title": [
@@ -319,6 +347,16 @@
           "command": "fanucLs.compareWithController",
           "when": "resourceLangId == fanuc-ls",
           "group": "7_transfer@2"
+        },
+        {
+          "command": "fanucLs.clone.showChanges",
+          "when": "explorerResourceIsFolder",
+          "group": "7_transfer@3"
+        },
+        {
+          "command": "fanucLs.clone.pushChanges",
+          "when": "explorerResourceIsFolder",
+          "group": "7_transfer@4"
         }
       ],
       "commandPalette": [
@@ -434,6 +472,20 @@
           "type": "boolean",
           "default": true,
           "description": "Vor dem Upload die Syntaxprüfung ausführen und bei Fehlern warnen."
+        },
+        "fanucLs.clone.fileTypes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "ls",
+            "tp",
+            "vr",
+            "pc",
+            "dt"
+          ],
+          "markdownDescription": "Dateitypen (Endungen), die beim **Controller klonen** geladen werden. Leere Liste = alle Dateien. Diagnosedateien wie `.dg` erzeugt die Steuerung erst bei Abruf, das kann dauern."
         },
         "fanucLs.format.autoNumber": {
           "type": "boolean",

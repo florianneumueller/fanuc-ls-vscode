@@ -14,6 +14,7 @@
 | `fanucLs.ftp.downloadDirectory` | `""` | Zielordner für Downloads; leer = Unterordner `fanuc` im Workspace |
 | `fanucLs.ftp.confirmUpload` | `true` | vor dem Überschreiben auf der Steuerung nachfragen |
 | `fanucLs.ftp.validateBeforeUpload` | `true` | vor dem Upload die Syntaxprüfung ausführen |
+| `fanucLs.clone.fileTypes` | `["ls","tp","vr","pc","dt"]` | Dateitypen beim Klonen; leer = alle |
 
 ## Formatierung
 
