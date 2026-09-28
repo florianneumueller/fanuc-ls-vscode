@@ -3,6 +3,9 @@
  * Positionen im Dokument. Ohne VS-Code-Abhängigkeit, damit testbar.
  */
 import { parse } from './parser';
+import { TextChange, applyChanges } from './textChange';
+
+export { TextChange, applyChanges };
 
 export type LabelRefKind = 'JMP' | 'SKIP' | 'TIMEOUT' | 'OTHER';
 
@@ -166,13 +169,6 @@ export function labelAt(
 	return undefined;
 }
 
-export interface TextChange {
-	line: number;
-	start: number;
-	end: number;
-	text: string;
-}
-
 /** Änderungen, um die Nummer eines Labels überall zu ersetzen. */
 export function renameLabelChanges(analysis: LabelAnalysis, from: number, to: number): TextChange[] {
 	const l = analysis.labels.find((x) => x.id === from);
@@ -214,16 +210,4 @@ export function renumberAllChanges(analysis: LabelAnalysis, start = 1, step = 1)
 		}
 	}
 	return changes;
-}
-
-/** Wendet Textänderungen auf einen Text an (für Tests und Vorschau). */
-export function applyChanges(text: string, changes: TextChange[]): string {
-	const lines = text.split(/\r?\n/);
-	const eol = text.includes('\r\n') ? '\r\n' : '\n';
-	const sorted = [...changes].sort((a, b) => b.line - a.line || b.start - a.start);
-	for (const c of sorted) {
-		const l = lines[c.line];
-		lines[c.line] = l.slice(0, c.start) + c.text + l.slice(c.end);
-	}
-	return lines.join(eol);
 }

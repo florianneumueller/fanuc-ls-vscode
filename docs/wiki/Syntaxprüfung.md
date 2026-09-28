@@ -30,6 +30,7 @@ Beim Überfahren mit der Maus erscheint die Meldung als Hover, darunter ein Link
 
 **Referenzen**
 - `P[n]` verwendet, aber nicht im `/POS`-Block definiert; doppelt definiert; nie verwendet (ausgegraut) *(`checkPositions`, `reportUnusedPositions`)*
+- Positionen gegen `DEFAULT_GROUP`: fehlende oder überzählige Bewegungsgruppen, uneinheitliche externe Achsen, siehe [[Bewegungsgruppen und externe Achsen]] *(`checkGroups`)*
 - `LBL[n]` undefiniert, doppelt oder nie angesprungen *(`checkLabels`)*
 - `IF … THEN` ohne `ENDIF`, `FOR` ohne `ENDFOR`, `ELSE` ohne `IF`
 - `CALL`/`RUN` auf ein Programm, das **auf der Steuerung** (`md:`) nicht vorhanden ist (Warnung). Die Programmliste wird im Hintergrund per FTP geladen und 5 Minuten zwischengespeichert; geprüft wird gegen den Controller, von dem die Datei stammt (Download, Öffnen oder [[Klon|Controller-und-FTP#controller-klonen]]), oder gegen alle Controller *(`checkCallTargetsOnController`)*
@@ -50,6 +51,8 @@ Cursor auf die markierte Stelle setzen und `Strg+.` drücken (oder auf die Glüh
 | Zeilennummern neu nummerieren | nummeriert `/MN` durch, aktualisiert `LINE_COUNT` und `MODIFIED` |
 | LINE_COUNT korrigieren | setzt `LINE_COUNT` auf die tatsächliche Zeilenzahl |
 | Semikolon anfügen | ergänzt das fehlende `;` |
+| P[n] im /POS-Block anlegen | legt die fehlende Position mit passenden Gruppen und Achsen an (Werte 0, zum Teachen) |
+| GPx ergänzen / entfernen / (de)aktivieren | gleicht Positionen und `DEFAULT_GROUP` ab |
 
 ## Grenzwerte an die Steuerung anpassen
 

@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { ControllerConfig, getControllers } from './config';
 import { ControllerProgramIndex, PROGRAM_DEVICE } from './controllerPrograms';
+import { checkGroups, parsePositions } from './posData';
 import {
 	isValidProgramName,
 	parse,
@@ -35,7 +36,11 @@ export const enum Code {
 	IndexRange = 'index-range',
 	CallTarget = 'call-target',
 	CallTargetController = 'call-target-controller',
-	LineFormat = 'line-format'
+	LineFormat = 'line-format',
+	GroupNone = 'group-none',
+	GroupMissing = 'group-missing',
+	GroupExtra = 'group-extra',
+	ExtAxisMismatch = 'ext-axis-mismatch'
 }
 
 const MOTION_TYPES = new Set(['J', 'L', 'C', 'A', 'S']);
@@ -108,6 +113,17 @@ export async function validate(doc: vscode.TextDocument): Promise<vscode.Diagnos
 	checkPositions(program, cfg, push);
 	checkLabels(program, cfg, push);
 	checkBlocks(program, push);
+
+	if (cfg.get<boolean>('validation.checkGroups', true)) {
+		for (const issue of checkGroups(parsePositions(doc.getText()))) {
+			push(
+				new vscode.Range(issue.line, issue.start, issue.line, Math.max(issue.end, issue.start + 1)),
+				issue.message,
+				issue.severity === 'error' ? vscode.DiagnosticSeverity.Error : vscode.DiagnosticSeverity.Warning,
+				issue.code as Code
+			);
+		}
+	}
 
 	await checkCalls(program, doc, cfg, push);
 

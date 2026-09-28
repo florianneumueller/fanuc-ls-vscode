@@ -39,7 +39,7 @@ function allSpans(l: LabelInfo): LabelSpan[] {
 }
 
 function toEdits(changes: TextChange[]): vscode.TextEdit[] {
-	return changes.map((c) => vscode.TextEdit.replace(new vscode.Range(c.line, c.start, c.line, c.end), c.text));
+	return changes.map((c) => vscode.TextEdit.replace(new vscode.Range(c.line, c.start, c.endLine ?? c.line, c.end), c.text));
 }
 
 async function applyChanges(doc: vscode.TextDocument, changes: TextChange[]): Promise<boolean> {

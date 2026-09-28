@@ -39,6 +39,7 @@
 | `fanucLs.validation.checkLineCount` | `true` | `LINE_COUNT` gegen tatsächliche Zeilenzahl |
 | `fanucLs.validation.checkPositions` | `true` | verwendete `P[n]` gegen `/POS` |
 | `fanucLs.validation.reportUnusedPositions` | `true` | unbenutzte Positionen melden |
+| `fanucLs.validation.checkGroups` | `true` | Positionen gegen `DEFAULT_GROUP` und externe Achsen prüfen |
 | `fanucLs.validation.checkLabels` | `true` | `LBL[n]` undefiniert/doppelt/unbenutzt |
 | `fanucLs.validation.checkMotion` | `true` | Geschwindigkeitseinheit, Überschleifen |
 | `fanucLs.validation.checkProgramName` | `true` | Programmname gegen Dateinamen |

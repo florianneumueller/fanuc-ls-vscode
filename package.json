@@ -266,6 +266,31 @@
         "title": "Nummer der Sprungmarke ändern",
         "category": "FANUC",
         "icon": "$(symbol-numeric)"
+      },
+      {
+        "command": "fanucLs.groups.addExtAxis",
+        "title": "Externe Achse hinzufügen",
+        "category": "FANUC"
+      },
+      {
+        "command": "fanucLs.groups.removeExtAxis",
+        "title": "Externe Achse entfernen",
+        "category": "FANUC"
+      },
+      {
+        "command": "fanucLs.groups.addGroup",
+        "title": "Bewegungsgruppe hinzufügen",
+        "category": "FANUC"
+      },
+      {
+        "command": "fanucLs.groups.removeGroup",
+        "title": "Bewegungsgruppe entfernen",
+        "category": "FANUC"
+      },
+      {
+        "command": "fanucLs.positions.create",
+        "title": "Position im /POS-Block anlegen",
+        "category": "FANUC"
       }
     ],
     "menus": {
@@ -405,6 +430,11 @@
           "command": "fanucLs.labels.insert",
           "when": "resourceLangId == fanuc-ls",
           "group": "1_modification@13"
+        },
+        {
+          "submenu": "fanucLs.positionsMenu",
+          "when": "resourceLangId == fanuc-ls",
+          "group": "1_modification@14"
         }
       ],
       "explorer/context": [
@@ -481,6 +511,48 @@
         {
           "command": "fanucLs.labels.renumberAll",
           "when": "editorLangId == fanuc-ls"
+        },
+        {
+          "command": "fanucLs.groups.addExtAxis",
+          "when": "editorLangId == fanuc-ls"
+        },
+        {
+          "command": "fanucLs.groups.removeExtAxis",
+          "when": "editorLangId == fanuc-ls"
+        },
+        {
+          "command": "fanucLs.groups.addGroup",
+          "when": "editorLangId == fanuc-ls"
+        },
+        {
+          "command": "fanucLs.groups.removeGroup",
+          "when": "editorLangId == fanuc-ls"
+        },
+        {
+          "command": "fanucLs.positions.create",
+          "when": "editorLangId == fanuc-ls"
+        }
+      ],
+      "fanucLs.positionsMenu": [
+        {
+          "command": "fanucLs.positions.create",
+          "group": "1_pos@0"
+        },
+        {
+          "command": "fanucLs.groups.addExtAxis",
+          "group": "2_axes@1"
+        },
+        {
+          "command": "fanucLs.groups.removeExtAxis",
+          "group": "2_axes@2"
+        },
+        {
+          "command": "fanucLs.groups.addGroup",
+          "group": "3_groups@3"
+        },
+        {
+          "command": "fanucLs.groups.removeGroup",
+          "group": "3_groups@4"
         }
       ]
     },
@@ -621,6 +693,11 @@
           "default": true,
           "description": "Verwendete P[n] gegen die Definitionen im /POS-Block prüfen."
         },
+        "fanucLs.validation.checkGroups": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Positionen gegen `DEFAULT_GROUP` prüfen: jede Position enthält genau die aktiven Bewegungsgruppen, externe Achsen sind je Gruppe einheitlich."
+        },
         "fanucLs.validation.reportUnusedPositions": {
           "type": "boolean",
           "default": true,
@@ -701,7 +778,13 @@
           "markdownDescription": "Obergrenzen je Registertyp für die Bereichsprüfung. `0` deaktiviert die Prüfung für diesen Typ. Werte an die Konfiguration der Steuerung anpassen."
         }
       }
-    }
+    },
+    "submenus": [
+      {
+        "id": "fanucLs.positionsMenu",
+        "label": "FANUC: Positionen & Achsen"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

@@ -18,6 +18,7 @@ Die Extension macht VS Code zum Editor für FANUC-TP-Programme im ASCII-Listing-
 | [[Syntaxhighlighting und Outline]] | Farben, Gliederung, Faltung |
 | [[Syntaxprüfung]] | Alle Prüfregeln, Quick Fixes, Grenzwerte |
 | [[Sprungmarken]] | Label-Ansicht, Umbenennen, Einfügen, Neu nummerieren |
+| [[Bewegungsgruppen und externe Achsen]] | Prüfung gegen DEFAULT_GROUP, Achsen und Gruppen hinzufügen/entfernen |
 | [[Snippets und Zeilennummern]] | Snippet-Liste, automatische Nummerierung |
 | [[Controller und FTP]] | Steuerung einrichten, Dateien übertragen, Sicherung |
 | [[Einstellungen]] | Alle Optionen mit Standardwerten |

@@ -7,6 +7,7 @@
 - [[Syntaxprüfung]]
 - [[Snippets und Zeilennummern]]
 - [[Sprungmarken]]
+- [[Bewegungsgruppen und externe Achsen]]
 - [[Controller und FTP]]
 - [[Einstellungen]]
 - [[Befehle]]
