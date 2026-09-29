@@ -48,6 +48,32 @@ Rechtsklick im Editor → **FANUC: Positionen & Achsen** oder über die Befehlsp
 | Bewegungsgruppe hinzufügen | aktiviert GPx in `DEFAULT_GROUP` und ergänzt die Gruppe in allen Positionen |
 | Bewegungsgruppe entfernen | deaktiviert GPx und entfernt ihre Daten aus allen Positionen (mit Rückfrage) |
 
+| Bewegungsgruppe spiegeln | spiegelt **eine** gewählte Gruppe in allen Positionen, alle anderen Gruppen bleiben unverändert (siehe unten) |
+
 Alle Änderungen lassen sich mit `Strg+Z` in einem Schritt rückgängig machen.
+
+## Bewegungsgruppe spiegeln
+
+Für spiegelbildliche Bauteile oder Stationen (links/rechts) lässt sich **eine einzelne Gruppe isoliert** spiegeln. Beispiele: nur den Roboter (GP1) spiegeln, der Positionierer (GP2) bleibt, oder nur den Positionierer, der Roboter bleibt. Aufruf: Rechtsklick im Editor → **FANUC: Positionen & Achsen → Bewegungsgruppe spiegeln**, oder Rechtsklick auf eine `.ls`-Datei im Explorer.
+
+1. **Gruppe wählen:** Angezeigt werden nur Gruppen, die im Programm vorkommen, mit Darstellung und Achsen.
+2. **Kartesische Gruppe** (X, Y, Z, W, P, R): Spiegelebene im Benutzerkoordinatensystem (UF) der jeweiligen Position wählen:
+   - **XZ-Ebene**: Y → 2·Versatz − Y, W → −W, R → −R, P bleibt
+   - **YZ-Ebene**: X → 2·Versatz − X, P → −P, R → −R, W bleibt
+
+   Die Orientierung wird so umgerechnet, dass die Werkzeugrichtung mitgespiegelt wird und das Werkzeugkoordinatensystem rechtshändig bleibt. Der Versatz legt die Lage der Ebene fest, z. B. `Y = 250` für die Mitte einer Vorrichtung.
+3. **Gruppe in Achswerten** (J1…Jn, z. B. Dreh-Kipp-Tisch): Achsen wählen, die gespiegelt werden, und den Mittelwert je Achse angeben. Neuer Wert = 2 × Mitte − alter Wert, z. B. `J1=0` macht aus 45° −45°.
+4. **Externe Achsen** (E1…E3) der Gruppe lassen sich auf dieselbe Weise optional mitspiegeln.
+5. **Ziel:** als **neues Programm** (Standard `<NAME>_M.LS` im selben Ordner, `/PROG`-Name angepasst) oder **in der offenen Datei**.
+
+Positionen, die in inkrementellen Bewegungen (`INC`) verwendet werden, sind Verschiebungen und werden ohne Versatz gespiegelt.
+
+Der Bericht im Ausgabekanal **FANUC Spiegeln** listet, was von Hand geprüft werden muss:
+- Bewegungen auf **Positionsregister** und `Offset,PR[…]`/`Tool_Offset`: Die Werte liegen auf der Steuerung und werden nicht gespiegelt.
+- Positionen der Gruppe, die in der anderen Darstellung gespeichert sind (Achswerte statt kartesisch oder umgekehrt)
+- Positionen in **verschiedenen Benutzerkoordinatensystemen**: Die Ebene liegt jeweils im UF der Position.
+- **CONFIG** (Handgelenk, Ellbogen, Umdrehungen) wird nicht verändert.
+
+> Gespiegelte Programme vor dem Einsatz in T1 mit reduziertem Override im Einzelschritt prüfen. Erreichbarkeit und Kollisionsfreiheit der gespiegelten Punkte sind nicht garantiert.
 
 > Neu angelegte Achs- und Gruppenwerte sind **Platzhalter (0)**. Vor dem Einsatz die Positionen am Roboter teachen und das Programm in T1 mit reduziertem Override testen.

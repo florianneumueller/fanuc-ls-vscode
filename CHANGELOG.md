@@ -12,6 +12,7 @@
 - E/A-Verwaltung: Ansicht E/A mit Kommentaren aus Programmen, Import vom Controller (z. B. `md:IOSTATE.DG`) und aus CSV, Export als CSV, Hover und Vervollständigung mit Kommentar (#1)
 - Gültige Bereiche je Typ (`"DO": "1-512, 6001-7000"`) mit Quick Fix; importierte Signale gelten als gültig; gespeicherter Status wie `ON :` wird im Editor ausgeblendet oder per Befehl entfernt (#2)
 - KAREL (`.kl`): Syntaxhighlighting, Outline, Einrückung/Faltung, Snippets, Kompilieren mit ktrans (`fanucLs.karel.ktransPath`) (#6)
+- Bewegungsgruppe spiegeln: eine Gruppe isoliert spiegeln – kartesisch an XZ-/YZ-Ebene mit Versatz (Orientierung wird umgerechnet), Achswerte und externe Achsen um wählbare Mittelwerte; als neues Programm oder in der Datei; Bericht mit Prüfhinweisen
 - Dateien in einem Klon kennen ihre Herkunft auch ohne gemerkten Download (Upload, Vergleich, CALL-Prüfung)
 
 ## 0.3.0

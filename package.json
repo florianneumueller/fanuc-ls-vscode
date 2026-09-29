@@ -378,6 +378,12 @@
         "title": "KAREL kompilieren (ktrans)",
         "category": "FANUC",
         "icon": "$(gear)"
+      },
+      {
+        "command": "fanucLs.mirrorGroup",
+        "title": "Bewegungsgruppe spiegeln",
+        "category": "FANUC",
+        "icon": "$(mirror)"
       }
     ],
     "menus": {
@@ -604,6 +610,11 @@
           "command": "fanucLs.clone.pushChanges",
           "when": "explorerResourceIsFolder",
           "group": "7_transfer@4"
+        },
+        {
+          "command": "fanucLs.mirrorGroup",
+          "when": "resourceLangId == fanuc-ls",
+          "group": "7_transfer@5"
         }
       ],
       "commandPalette": [
@@ -686,6 +697,10 @@
         {
           "command": "fanucLs.karel.compile",
           "when": "editorLangId == fanuc-karel"
+        },
+        {
+          "command": "fanucLs.mirrorGroup",
+          "when": "editorLangId == fanuc-ls"
         }
       ],
       "fanucLs.positionsMenu": [
@@ -708,6 +723,10 @@
         {
           "command": "fanucLs.groups.removeGroup",
           "group": "3_groups@4"
+        },
+        {
+          "command": "fanucLs.mirrorGroup",
+          "group": "4_mirror@1"
         }
       ]
     },
