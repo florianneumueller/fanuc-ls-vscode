@@ -1,19 +1,34 @@
 # Änderungen
 
-## Unveröffentlicht
+## 0.4.0
 
-- Programmnamen dürfen Ziffern enthalten, auch am Anfang (#3)
-- Vergleich lokale Datei ↔ Controller im Diff-Editor, in beide Richtungen (#8)
-- Controller klonen: Geräte in einen Ordner laden, Änderungen anzeigen und gezielt zurückübertragen, mit Konfliktprüfung gegen Änderungen auf der Steuerung (#10)
-- CALL/RUN-Ziele werden im Hintergrund gegen die Programmliste der Steuerung geprüft (`fanucLs.validation.checkCallTargetsOnController`) (#9)
-- Sprungmarken: eigene Ansicht mit Sprüngen je Label, Einfügen, Kommentar bearbeiten, Nummer ändern, alle neu nummerieren; im Editor Gehe zu Definition, Verweise, Umbenennen (F2), Hover, Hervorhebung, Vervollständigung (#7)
-- Positionen werden gegen `DEFAULT_GROUP` geprüft (fehlende/überzählige Gruppen, uneinheitliche externe Achsen) mit Quick Fixes (#4)
-- Befehle: externe Achse hinzufügen/entfernen, Bewegungsgruppe hinzufügen/entfernen, Position anlegen (auch als Quick Fix für nicht definierte P[n]) (#5)
-- E/A-Verwaltung: Ansicht E/A mit Kommentaren aus Programmen, Import vom Controller (z. B. `md:IOSTATE.DG`) und aus CSV, Export als CSV, Hover und Vervollständigung mit Kommentar (#1)
-- Gültige Bereiche je Typ (`"DO": "1-512, 6001-7000"`) mit Quick Fix; importierte Signale gelten als gültig; gespeicherter Status wie `ON :` wird im Editor ausgeblendet oder per Befehl entfernt (#2)
-- KAREL (`.kl`): Syntaxhighlighting, Outline, Einrückung/Faltung, Snippets, Kompilieren mit ktrans (`fanucLs.karel.ktransPath`) (#6)
-- Bewegungsgruppe spiegeln: eine Gruppe isoliert spiegeln – kartesisch an XZ-/YZ-Ebene mit Versatz (Orientierung wird umgerechnet), Achswerte und externe Achsen um wählbare Mittelwerte; als neues Programm oder in der Datei; Bericht mit Prüfhinweisen
-- Dateien in einem Klon kennen ihre Herkunft auch ohne gemerkten Download (Upload, Vergleich, CALL-Prüfung)
+Großes Funktions-Update: Arbeiten mit dem Controller als lokaler Klon, Verwaltung von Sprungmarken, E/A und Bewegungsgruppen, Spiegeln von Programmen und KAREL-Unterstützung. Ausführliche Beschreibungen mit Screenshots im [Wiki](https://github.com/frontline-networks/fanuc-ls-vscode/wiki).
+
+### Neu
+
+- **Controller klonen** (#10): Geräte einer Steuerung in einen Ordner laden, lokale Änderungen anzeigen und gezielt zurückübertragen. Dateien, die inzwischen am Teach Pendant geändert wurden, werden nicht überschrieben, sondern als Konflikt gemeldet.
+- **Vergleich lokal ↔ Controller** (#8): Diff-Editor in beide Richtungen (Editor-Titelleiste bzw. Kontextmenü der Controller-Ansicht).
+- **Sprungmarken-Editor** (#7): Ansicht „Sprungmarken“ mit allen Sprüngen je Label; Einfügen mit nächster freier Nummer, Kommentar bearbeiten, Nummer ändern, alle neu nummerieren. Im Editor: Gehe zu Definition (F12), Verweise, Umbenennen (F2), Hover, Hervorhebung, Vervollständigung.
+- **E/A-Verwaltung** (#1, #2): Ansicht „E/A“ mit Kommentaren aus den Programmen, Import vom Controller (z. B. `md:IOSTATE.DG`) und aus CSV, Export als CSV; Hover und Vervollständigung mit Kommentar. Der im Text gespeicherte Status (`DO[6338:ON :…]`) wird ausgeblendet oder per Befehl entfernt.
+- **Bewegungsgruppen und externe Achsen** (#4, #5): Positionen werden gegen `DEFAULT_GROUP` geprüft; Quick Fixes gleichen Positionen und Header ab. Befehle zum Hinzufügen/Entfernen von externen Achsen und Gruppen sowie zum Anlegen fehlender Positionen.
+- **Bewegungsgruppe spiegeln**: eine Gruppe isoliert spiegeln, alle anderen bleiben unverändert – kartesisch an XZ-/YZ-Ebene mit Versatz (Orientierung wird mitgerechnet), Achswerte und externe Achsen um wählbare Mittelwerte; als neues Programm oder in der Datei, mit Prüfbericht.
+- **KAREL** (#6): Sprache `.kl` mit Syntaxhighlighting, Outline, Einrückung/Faltung, 24 Snippets und Kompilieren über ktrans (ROBOGUIDE).
+
+### Verbessert
+
+- **CALL/RUN-Prüfung gegen die Steuerung** (#9): Die Programmliste von `md:` wird im Hintergrund geladen; fehlende Programme werden als Warnung gemeldet (`fanucLs.validation.checkCallTargetsOnController`).
+- **Gültige Bereiche** statt nur Obergrenzen in `fanucLs.validation.limits`, z. B. `"DO": "1-512, 6001-7000"`, mit Quick Fix; Signale aus importierten E/A-Listen gelten als gültig.
+- Dateien in einem Klon kennen ihre Herkunft auch ohne gemerkten Download (Upload, Vergleich, CALL-Prüfung).
+- Neue Einstellungen: `fanucLs.clone.fileTypes`, `fanucLs.validation.checkGroups`, `fanucLs.io.hideStatus`, `fanucLs.karel.ktransPath`, `fanucLs.karel.ktransArgs`.
+
+### Behoben
+
+- Programmnamen mit Ziffern, auch am Anfang (`100_PICK`), werden nicht mehr als Fehler gemeldet und korrekt hervorgehoben (#3).
+
+### Hinweise
+
+- Neu erzeugte Achs-, Gruppen- und Positionswerte sind Platzhalter (0 bzw. „TEACH“), gespiegelte Positionen ungeprüft: vor dem Einsatz in T1 mit reduziertem Override testen.
+- Nicht an echter Hardware geprüft: Aufbau von `IOSTATE.DG` (#2), LS-Format externer Achsen/zweiter Gruppen (#5), Aufruf von ktrans (#6). Rückmeldungen bitte in den jeweiligen Issues.
 
 ## 0.3.0
 

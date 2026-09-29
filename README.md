@@ -19,7 +19,7 @@ Zum Ausprobieren `F5` drücken — es öffnet sich ein zweites VS-Code-Fenster m
 
 ```bash
 npm run package        # nutzt das lokal installierte @vscode/vsce (Node >= 22)
-code --install-extension fanuc-ls-0.3.0.vsix
+code --install-extension fanuc-ls-0.4.0.vsix
 ```
 
 ### Automatischer Build (GitHub Actions)

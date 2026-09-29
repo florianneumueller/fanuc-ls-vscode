@@ -2,7 +2,7 @@
   "name": "fanuc-ls",
   "displayName": "FANUC TP (LS)",
   "description": "Syntaxhighlighting, Snippets, Syntaxprüfung und FTP-Dateitransfer für FANUC TP-Programme (.ls) und KAREL (.kl)",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "publisher": "frontlinenetworks",
   "license": "MIT",
   "repository": {

@@ -50,4 +50,10 @@ jobs:
             exit 1
           fi
           mv fanuc-ls-${{ github.sha }}.vsix fanuc-ls-$VERSION.vsix
-          gh release create "$TAG" fanuc-ls-$VERSION.vsix --target "$GITHUB_SHA" --title "$TAG" --generate-notes
+          # Release Notes: Abschnitt "## <Version>" aus CHANGELOG.md, danach die automatische Liste der Änderungen
+          awk -v v="$VERSION" '$0 == "## " v {f=1; next} /^## / && f {exit} f' CHANGELOG.md > release-notes.md
+          if [ ! -s release-notes.md ]; then
+            echo "::warning::Kein Abschnitt '## $VERSION' in CHANGELOG.md gefunden"
+          fi
+          printf '\n**Installation:** `fanuc-ls-%s.vsix` herunterladen und in VS Code über *Erweiterungen → … → Install from VSIX* installieren.\n' "$VERSION" >> release-notes.md
+          gh release create "$TAG" fanuc-ls-$VERSION.vsix --target "$GITHUB_SHA" --title "$TAG" --notes-file release-notes.md --generate-notes
