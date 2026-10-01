@@ -1,10 +1,29 @@
 # Änderungen
 
-## Unveröffentlicht
+## 0.5.0
 
-- **Argument-Wizard (ARGDISP-Dateien, `.DT`)**: eigene Sprache mit Syntaxhighlighting, Syntaxprüfung nach FANUC-Handbuch (mit Zuordnung zu den Alarmen FILE-096…102), Quick Fixes, Outline, Snippets, Hover mit Vorschau des CALL am Teach Pendant
-- CALL-Argumente in TP-Programmen werden gegen die ARGDISP-Beschreibung geprüft (Anzahl, V-/W-Werte, Typ), auch in der LS-Form `"Bedeutung"=Wert`; Hover auf `CALL` zeigt die Argumente
-- Befehle: Argumente eines TP-Programms (verwendete `AR[n]`) als ARGDISP-Block anlegen, neue ARGDISP-Datei
+Unterstützung für den **Argument-Wizard** („Wizard to input arguments“): ARGDISP-Dateien (`.DT`) schreiben und prüfen, und die CALL-Aufrufe in den TP-Programmen dagegen abgleichen. Details im [Wiki](https://github.com/frontline-networks/fanuc-ls-vscode/wiki/Argument-Wizard).
+
+### Neu
+
+- **ARGDISP-Dateien (`ARGDISP<Sprache><Nr>.DT`)** als eigene Sprache mit Syntaxhighlighting, Faltung, Outline und eigenem Dateisymbol.
+- **Syntaxprüfung nach FANUC-Handbuch** (MAROUHT9307191E, Kap. 7.9.5) mit Zuordnung zu den Alarmen beim Laden (FILE-096 bis FILE-102): Abschnitte, `NAME`/`ARGUMENT`, Argumenttypen N/S/V/W (01–30), Vorgabewerte (`'10'`, `(R)`, `(AR)`, `"Text"`, `(SR)`), Längen, verbotene Zeichen, Wertebereiche, eindeutige Makros, max. 35 Einträge, Dateiname.
+- **Quick Fixes:** `PROGRAM` → `NAME`, `ARGUMENT` korrigieren, `[ENDPROGRAM]` einfügen.
+- **Hover mit Vorschau**, wie der CALL am Teach Pendant angezeigt wird, plus Argumenttabelle.
+- **13 Snippets** (`program`, `n`, `nd`, `nr`, `s`, `sd`, `sr`, `v`, `v3`, `vyes`, `vlr`, `w`, `comment`).
+- **Befehle:** Argumente eines TP-Programms (verwendete `AR[n]`) als ARGDISP-Block anlegen; neue ARGDISP-Datei mit Sprachauswahl.
+
+### Verbessert
+
+- **CALL-Prüfung in TP-Programmen** gegen die ARGDISP-Beschreibung: Anzahl der Argumente, Werte von V-/W-Auswahlen, Typ (Zahl/Text) – auch in der LS-Form mit Bedeutung `CALL X("LINE"=3,"SLOW"=1)` (`fanucLs.validation.checkCallArguments`).
+- **Hover auf `CALL PROG`** zeigt die Argumentbeschreibung.
+- Nach dem Upload einer ARGDISP-Datei erscheint ein Hinweis zum Laden an der Steuerung (MC:, F3 [LOAD], Neustart).
+- Copilot-Skill kennt das ARGDISP-Format und die beschriftete CALL-Schreibweise.
+
+### Hinweise
+
+- Neue ARGDISP-Dateien werden erst nach **F3 [LOAD] von MC:** und einem **Neustart** der Steuerung wirksam; gelesen wird nur die Datei in der eingestellten Sprache.
+- `ARGUMENT : '4'` (Doppelpunkt, wie in einem Handbuch-Beispiel) wird akzeptiert; ob jede Steuerung das lädt, ist nicht geprüft.
 
 ## 0.4.0
 
