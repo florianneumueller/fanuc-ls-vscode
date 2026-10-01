@@ -1,5 +1,11 @@
 # Änderungen
 
+## Unveröffentlicht
+
+- **Argument-Wizard (ARGDISP-Dateien, `.DT`)**: eigene Sprache mit Syntaxhighlighting, Syntaxprüfung nach FANUC-Handbuch (mit Zuordnung zu den Alarmen FILE-096…102), Quick Fixes, Outline, Snippets, Hover mit Vorschau des CALL am Teach Pendant
+- CALL-Argumente in TP-Programmen werden gegen die ARGDISP-Beschreibung geprüft (Anzahl, V-/W-Werte, Typ), auch in der LS-Form `"Bedeutung"=Wert`; Hover auf `CALL` zeigt die Argumente
+- Befehle: Argumente eines TP-Programms (verwendete `AR[n]`) als ARGDISP-Block anlegen, neue ARGDISP-Datei
+
 ## 0.4.0
 
 Großes Funktions-Update: Arbeiten mit dem Controller als lokaler Klon, Verwaltung von Sprungmarken, E/A und Bewegungsgruppen, Spiegeln von Programmen und KAREL-Unterstützung. Ausführliche Beschreibungen mit Screenshots im [Wiki](https://github.com/frontline-networks/fanuc-ls-vscode/wiki).

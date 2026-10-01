@@ -19,6 +19,8 @@
     "Other"
   ],
   "keywords": [
+    "argdisp",
+    "argument wizard",
     "fanuc",
     "karel",
     "kl",
@@ -33,6 +35,7 @@
   "activationEvents": [
     "onLanguage:fanuc-ls",
     "onLanguage:fanuc-karel",
+    "onLanguage:fanuc-dt",
     "onView:fanucLs.controllers",
     "onView:fanucLs.labels",
     "onView:fanucLs.io"
@@ -73,6 +76,28 @@
           "light": "./resources/file-icon-karel.svg",
           "dark": "./resources/file-icon-karel.svg"
         }
+      },
+      {
+        "id": "fanuc-dt",
+        "aliases": [
+          "FANUC Argument Wizard (ARGDISP)",
+          "ARGDISP",
+          "fanuc-dt"
+        ],
+        "filenamePatterns": [
+          "ARGDISP*.DT",
+          "ARGDISP*.dt",
+          "argdisp*.dt",
+          "argdisp*.DT",
+          "Argdisp*.dt",
+          "Argdisp*.DT"
+        ],
+        "firstLine": "^\\s*\\[\\s*PROGRAM\\s*\\]",
+        "configuration": "./language-configuration-dt.json",
+        "icon": {
+          "light": "./resources/file-icon-dt.svg",
+          "dark": "./resources/file-icon-dt.svg"
+        }
       }
     ],
     "grammars": [
@@ -85,6 +110,11 @@
         "language": "fanuc-karel",
         "scopeName": "source.fanuc-karel",
         "path": "./syntaxes/fanuc-karel.tmLanguage.json"
+      },
+      {
+        "language": "fanuc-dt",
+        "scopeName": "source.fanuc-dt",
+        "path": "./syntaxes/fanuc-dt.tmLanguage.json"
       }
     ],
     "snippets": [
@@ -95,6 +125,10 @@
       {
         "language": "fanuc-karel",
         "path": "./snippets/fanuc-karel.json"
+      },
+      {
+        "language": "fanuc-dt",
+        "path": "./snippets/fanuc-dt.json"
       }
     ],
     "chatSkills": [
@@ -118,6 +152,11 @@
         "editor.insertSpaces": false,
         "editor.tabSize": 4,
         "editor.detectIndentation": true
+      },
+      "[fanuc-dt]": {
+        "files.eol": "\r\n",
+        "editor.insertSpaces": true,
+        "editor.tabSize": 4
       }
     },
     "viewsContainers": {
@@ -384,6 +423,18 @@
         "title": "Bewegungsgruppe spiegeln",
         "category": "FANUC",
         "icon": "$(mirror)"
+      },
+      {
+        "command": "fanucLs.dt.fromProgram",
+        "title": "Argumente für den Wizard beschreiben (ARGDISP)",
+        "category": "FANUC",
+        "icon": "$(symbol-parameter)"
+      },
+      {
+        "command": "fanucLs.dt.newFile",
+        "title": "Neue ARGDISP-Datei anlegen",
+        "category": "FANUC",
+        "icon": "$(new-file)"
       }
     ],
     "menus": {
@@ -551,6 +602,11 @@
           "command": "fanucLs.uploadCurrentFile",
           "when": "resourceLangId == fanuc-karel",
           "group": "navigation@2"
+        },
+        {
+          "command": "fanucLs.uploadCurrentFile",
+          "when": "resourceLangId == fanuc-dt",
+          "group": "navigation@1"
         }
       ],
       "editor/context": [
@@ -701,6 +757,10 @@
         {
           "command": "fanucLs.mirrorGroup",
           "when": "editorLangId == fanuc-ls"
+        },
+        {
+          "command": "fanucLs.dt.fromProgram",
+          "when": "editorLangId == fanuc-ls"
         }
       ],
       "fanucLs.positionsMenu": [
@@ -727,6 +787,10 @@
         {
           "command": "fanucLs.mirrorGroup",
           "group": "4_mirror@1"
+        },
+        {
+          "command": "fanucLs.dt.fromProgram",
+          "group": "5_args@1"
         }
       ]
     },
@@ -901,6 +965,11 @@
           "type": "boolean",
           "default": true,
           "description": "Bei CALL/RUN prüfen, ob im Workspace eine passende Programmdatei existiert (nur wenn keine Programmliste einer Steuerung vorliegt)."
+        },
+        "fanucLs.validation.checkCallArguments": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "CALL-Argumente gegen die Beschreibung in ARGDISP-Dateien (`ARGDISP*.DT`) im Workspace prüfen: Anzahl, Werte von Makro- (V) und String-Auswahlen (W), Typ."
         },
         "fanucLs.validation.checkCallTargetsOnController": {
           "type": "string",

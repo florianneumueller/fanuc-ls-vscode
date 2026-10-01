@@ -228,6 +228,13 @@ END ;
 - `RUN HINTERGRUND ;`: startet parallel (Multitasking)
 - `END ;`: Ende des Programms / Rückkehr
 
+Ist an der Steuerung der Argument-Wizard aktiv (ARGDISP-Datei), speichert sie Aufrufe mit Bedeutung in Anführungszeichen. Beim ASCII-Upload werden die Bedeutungen ignoriert, beide Formen sind gleichwertig:
+```
+CALL HANDLING(3,1,3,0) ;
+CALL HANDLING("LINE"=3,"SLOW"=1,"BIG"=3,"NO_LOAD"=0) ;
+```
+Die Beschreibung steht in `ARGDISP<Sprache><Nr>.DT` (z. B. `ARGDISPEG01.DT`): `[PROGRAM]`, `NAME = "PROG"`, `ARGUMENT = 'n'`, `[ARGUMENT]`, dann je Argument `Nxx = "Bedeutung"` (Zahl), `Sxx` (String), `Vxx = "NAME":'1', …` (Makro-Auswahl) oder `Wxx = "TEXT1", …` (String-Auswahl), abgeschlossen mit `[ENDPROGRAM]`. Bedeutungen max. 15 Zeichen, keine `, ; : ' "` in Texten.
+
 Unterprogramm mit Argumenten:
 ```
 IF AR[1]=1,JMP LBL[1] ;

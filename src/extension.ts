@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
-import { DIAG_SOURCE, invalidateProgramCache, setCallTargetSource, setIoLookup, validate } from './diagnostics';
+import { DIAG_SOURCE, invalidateProgramCache, setCallTargetSource, setDtLookup, setIoLookup, validate } from './diagnostics';
+import { DtIndex, registerDtFeatures } from './dt';
 import { IoStore } from './io';
 import { ControllerProgramIndex } from './controllerPrograms';
 import { FanucCodeActionProvider } from './quickfix';
@@ -66,6 +67,18 @@ export function activate(context: vscode.ExtensionContext): void {
 	registerGroupCommands(context);
 	registerKarelFeatures(context);
 	registerMirrorCommand(context);
+
+	// --- ARGDISP-Dateien (Wizard to input arguments) ----------------------------
+
+	const dtIndex = new DtIndex();
+	context.subscriptions.push(dtIndex);
+	setDtLookup((name) => dtIndex.find(name)?.program);
+	registerDtFeatures(context, dtIndex, () => {
+		for (const doc of vscode.workspace.textDocuments) {
+			void runValidation(doc);
+		}
+	});
+	void dtIndex.reload();
 
 	// --- Sidepanel -----------------------------------------------------------
 

@@ -1,0 +1,97 @@
+{
+  "Programmblock": {
+    "prefix": "program",
+    "description": "[PROGRAM]-Block mit NAME, ARGUMENT und [ARGUMENT]",
+    "body": [
+      "[PROGRAM]   {${1:Beschreibung}}",
+      "NAME = \"${2:PROGRAMM}\"",
+      "ARGUMENT = '${3:1}'",
+      "[ARGUMENT]",
+      "N01 = \"${4:Bedeutung}\"$0",
+      "[ENDPROGRAM]"
+    ]
+  },
+  "N – Zahl": {
+    "prefix": "n",
+    "description": "Zahl-Argument (Konstante, R[ ] oder AR[ ])",
+    "body": [
+      "N${1:01} = \"${2:Bedeutung}\"$0"
+    ]
+  },
+  "N – Zahl mit Vorgabewert": {
+    "prefix": "nd",
+    "description": "Zahl mit Vorgabewert (Ganzzahl ±2^24 oder Dezimalzahl)",
+    "body": [
+      "N${1:01} = \"${2:Bedeutung}\":'${3:0}'$0"
+    ]
+  },
+  "N – Zahl, Vorgabe Register": {
+    "prefix": "nr",
+    "description": "Zahl, beim Einlernen R[...] oder AR[...] vorgeben",
+    "body": [
+      "N${1:01} = \"${2:Bedeutung}\":(${3|R,AR|})$0"
+    ]
+  },
+  "S – Zeichenkette": {
+    "prefix": "s",
+    "description": "String-Argument (String, SR[ ] oder AR[ ])",
+    "body": [
+      "S${1:01} = \"${2:Bedeutung}\"$0"
+    ]
+  },
+  "S – Zeichenkette mit Vorgabe": {
+    "prefix": "sd",
+    "description": "String mit Vorgabetext",
+    "body": [
+      "S${1:01} = \"${2:Bedeutung}\":\"${3:Text}\"$0"
+    ]
+  },
+  "S – Zeichenkette, Vorgabe Register": {
+    "prefix": "sr",
+    "description": "String, beim Einlernen SR[...] oder AR[...] vorgeben",
+    "body": [
+      "S${1:01} = \"${2:Bedeutung}\":(${3|SR,AR|})$0"
+    ]
+  },
+  "V – Makro-Auswahl (2)": {
+    "prefix": "v",
+    "description": "Auswahl: Name wird angezeigt, Zahl übergeben",
+    "body": [
+      "V${1:01} = \"${2:AUS}\":'${3:0}', \"${4:EIN}\":'${5:1}'$0"
+    ]
+  },
+  "V – Makro-Auswahl (3)": {
+    "prefix": "v3",
+    "description": "Auswahl mit drei Einträgen",
+    "body": [
+      "V${1:01} = \"${2:LANGSAM}\":'${3:1}', \"${4:NORMAL}\":'${5:2}', \"${6:SCHNELL}\":'${7:3}'$0"
+    ]
+  },
+  "V – Ja/Nein": {
+    "prefix": "vyes",
+    "description": "Auswahl NEIN=0 / JA=1",
+    "body": [
+      "V${1:01} = \"NEIN\":'0', \"JA\":'1'$0"
+    ]
+  },
+  "V – Links/Rechts": {
+    "prefix": "vlr",
+    "description": "Auswahl LINKS=1 / RECHTS=2",
+    "body": [
+      "V${1:01} = \"LINKS\":'1', \"RECHTS\":'2'$0"
+    ]
+  },
+  "W – String-Auswahl": {
+    "prefix": "w",
+    "description": "Auswahl aus Strings; der Text wird übergeben",
+    "body": [
+      "W${1:01} = \"${2:TEXT1}\", \"${3:TEXT2}\"$0"
+    ]
+  },
+  "Kommentar": {
+    "prefix": "comment",
+    "body": [
+      "{${1:Kommentar}}$0"
+    ]
+  }
+}

@@ -422,7 +422,13 @@ export function registerCommands(
 			ftp.uploadFile(controller, secrets, localPath, remotePath)
 		);
 		programIndex.invalidate(controller.name);
-		vscode.window.showInformationMessage(`${path.basename(localPath)} wurde nach ${remotePath} geladen.`);
+		if (/^ARGDISP[A-Z]{2}\d{2}\.DT$/i.test(path.basename(localPath))) {
+			vscode.window.showInformationMessage(
+				`${path.basename(localPath)} wurde nach ${remotePath} übertragen. Zum Aktivieren: Datei auf MC: ablegen, im Dateimenü mit F3 [LOAD] laden und die Steuerung neu starten.`
+			);
+		} else {
+			vscode.window.showInformationMessage(`${path.basename(localPath)} wurde nach ${remotePath} geladen.`);
+		}
 	}
 
 	/**

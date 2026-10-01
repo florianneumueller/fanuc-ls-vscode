@@ -11,6 +11,7 @@
 - [[Controller und FTP]]
 - [[Ein und Ausgänge]]
 - [[KAREL]]
+- [[Argument-Wizard]]
 - [[Einstellungen]]
 - [[Befehle]]
 - [[Praxishinweise]]

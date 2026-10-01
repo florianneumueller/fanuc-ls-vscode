@@ -57,6 +57,7 @@
 | `fanucLs.validation.checkMotion` | `true` | Geschwindigkeitseinheit, Überschleifen |
 | `fanucLs.validation.checkProgramName` | `true` | Programmname gegen Dateinamen |
 | `fanucLs.validation.checkCallTargetsOnController` | `origin` | `CALL`-Ziele gegen die Programmliste der Steuerung prüfen: `origin` = Controller, von dem die Datei stammt, `all` = alle Controller, `off` = aus |
+| `fanucLs.validation.checkCallArguments` | `true` | CALL-Argumente gegen ARGDISP-Dateien prüfen, siehe [[Argument-Wizard]] |
 | `fanucLs.validation.checkCallTargets` | `true` | `CALL`-Ziele im Workspace suchen, wenn keine Programmliste einer Steuerung vorliegt |
 | `fanucLs.validation.checkLineFormat` | `false` | strenges Zeilenformat |
 | `fanucLs.validation.maxLinearSpeed` | `2000` | Warnschwelle Bahngeschwindigkeit in mm/sec |

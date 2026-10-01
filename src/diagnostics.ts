@@ -4,6 +4,7 @@ import { ControllerConfig, getControllers } from './config';
 import { ControllerProgramIndex, PROGRAM_DEVICE } from './controllerPrograms';
 import { checkGroups, parsePositions } from './posData';
 import { formatRanges, inRanges, parseRanges } from './ioCore';
+import { DtProgram, checkCallArguments, splitCallArgs } from './dtCore';
 import {
 	isValidProgramName,
 	parse,
@@ -37,6 +38,7 @@ export const enum Code {
 	IndexRange = 'index-range',
 	CallTarget = 'call-target',
 	CallTargetController = 'call-target-controller',
+	CallArguments = 'call-arguments',
 	LineFormat = 'line-format',
 	GroupNone = 'group-none',
 	GroupMissing = 'group-missing',
@@ -80,6 +82,13 @@ export function setCallTargetSource(source: CallTargetSource): void {
 }
 
 /** Ist ein Signal in einer importierten E/A-Liste enthalten? Dann gilt es als gültig konfiguriert. */
+/** Argumentbeschreibungen aus ARGDISP-Dateien (Wizard to input arguments). */
+let dtLookup: ((name: string) => DtProgram | undefined) | undefined;
+
+export function setDtLookup(fn: (name: string) => DtProgram | undefined): void {
+	dtLookup = fn;
+}
+
 let ioConfigured: ((type: string, index: number) => boolean) | undefined;
 
 export function setIoLookup(fn: (type: string, index: number) => boolean): void {
@@ -134,6 +143,9 @@ export async function validate(doc: vscode.TextDocument): Promise<vscode.Diagnos
 	}
 
 	await checkCalls(program, doc, cfg, push);
+	if (dtLookup && cfg.get<boolean>('validation.checkCallArguments', true)) {
+		checkCallArgs(program, push);
+	}
 
 	return out;
 }
@@ -673,6 +685,52 @@ async function checkCalls(
 			vscode.DiagnosticSeverity.Information,
 			Code.CallTarget
 		);
+	}
+}
+
+/** CALL-Argumente gegen die Beschreibung in einer ARGDISP-Datei prüfen. */
+function checkCallArgs(program: ParsedProgram, push: Push): void {
+	for (const tp of program.tpLines) {
+		const re = /\b(?:CALL|RUN)\s+([A-Za-z0-9_]+)\s*\(/g;
+		let m: RegExpExecArray | null;
+		while ((m = re.exec(tp.text)) !== null) {
+			const def = dtLookup!(m[1]);
+			if (!def) {
+				continue;
+			}
+			const open = m.index + m[0].length;
+			let depth = 1;
+			let quote: string | undefined;
+			let close = -1;
+			for (let i = open; i < tp.text.length; i++) {
+				const c = tp.text[i];
+				if (quote) {
+					if (c === quote) {
+						quote = undefined;
+					}
+				} else if (c === "'" || c === '"') {
+					quote = c;
+				} else if (c === '(') {
+					depth++;
+				} else if (c === ')' && --depth === 0) {
+					close = i;
+					break;
+				}
+			}
+			if (close < 0) {
+				continue;
+			}
+			const args = splitCallArgs(tp.text.slice(open, close), open);
+			for (const issue of checkCallArguments(def, args)) {
+				const a = issue.argIndex >= 0 ? args[issue.argIndex] : undefined;
+				push(
+					a ? mapRange(program, tp, a.start, a.end - a.start) : mapRange(program, tp, m.index, close + 1 - m.index),
+					issue.message,
+					issue.severity === 'warning' ? vscode.DiagnosticSeverity.Warning : vscode.DiagnosticSeverity.Information,
+					Code.CallArguments
+				);
+			}
+		}
 	}
 }
 
