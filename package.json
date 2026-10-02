@@ -1128,7 +1128,7 @@
     "test": "npm run compile && node --test test/*.test.js"
   },
   "dependencies": {
-    "basic-ftp": "^5.0.5"
+    "basic-ftp": "^6.2.1"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",
