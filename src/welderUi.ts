@@ -226,6 +226,15 @@ code { font-family: var(--vscode-editor-font-family); }
 .spinner { width: 36px; height: 36px; border: 4px solid var(--vscode-input-border, #8884); border-top-color: var(--vscode-button-background); border-radius: 50%; animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 body.busy .buttons button { opacity: .5; pointer-events: none; }
+.home { padding: 6px 10px 16px; max-width: none; font-size: 13px; }
+.home .status { font-size: 12px; color: var(--vscode-descriptionForeground); margin: 4px 0 8px; line-height: 1.6; }
+.home input.search { font: inherit; width: 100%; box-sizing: border-box; padding: 5px 8px; margin-bottom: 6px; border-radius: 4px; border: 1px solid var(--vscode-input-border, #8884); background: var(--vscode-input-background); color: var(--vscode-input-foreground); }
+.home details { margin-bottom: 4px; }
+.home summary { cursor: pointer; padding: 6px 0 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--vscode-descriptionForeground); user-select: none; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 5px; margin-bottom: 4px; }
+.tile { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 3px; padding: 7px 3px 6px; font-size: 11px; line-height: 1.2; text-align: center; border-radius: 5px; background: var(--vscode-editorWidget-background, var(--vscode-sideBar-background)); color: var(--vscode-foreground); border: 1px solid var(--vscode-widget-border, var(--vscode-input-border, #8884)); hyphens: manual; overflow-wrap: break-word; }
+.tile:hover, .tile:focus { border-color: var(--vscode-focusBorder); background: var(--vscode-list-hoverBackground); }
+.tile .icon { font-size: 18px; line-height: 1; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
 `;
 
@@ -271,10 +280,10 @@ const first = document.querySelector('[autofocus], .content input:not([type=radi
 if (first) first.focus();
 `;
 
-export function document(title: string, body: string): string {
+export function document(title: string, body: string, extraScript = ''): string {
 	const n = nonce();
 	return `<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'nonce-${n}';">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>${esc(title)}</title><style>${STYLE}</style></head>
-<body>${body}<script nonce="${n}">${SCRIPT}</script></body></html>`;
+<body>${body}<script nonce="${n}">${SCRIPT}${extraScript}</script></body></html>`;
 }

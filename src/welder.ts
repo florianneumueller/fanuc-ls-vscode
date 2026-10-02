@@ -25,6 +25,7 @@ import {
 	toMmPerSec
 } from './weldCore';
 import { TextChange } from './textChange';
+import { SECTIONS, allTiles } from './welderCatalog';
 import {
 	Wizard,
 	backButton,
@@ -50,18 +51,23 @@ const SAFETY = 'Vor dem Automatikbetrieb das Programm im Handbetrieb (T1) mit re
 /** Zuletzt aktives TP-Programm (der Assistent selbst hat den Fokus, daher merken). */
 let lastProgram: vscode.Uri | undefined;
 let onProgramChanged: (() => void) | undefined;
+/** Zuletzt bearbeitete Datei je Sprache (für Kacheln, die eine offene Datei brauchen). */
+const lastByLanguage = new Map<string, vscode.Uri>();
 
 function setLastProgram(uri: vscode.Uri): void {
 	lastProgram = uri;
+	lastByLanguage.set('fanuc-ls', uri);
 	onProgramChanged?.();
 }
 
 export function registerWelder(context: vscode.ExtensionContext, api: FanucApi): void {
 	const home = new WelderHome();
-	onProgramChanged = () => home.refresh();
+	onProgramChanged = () => home.programChanged();
 	const track = (e: vscode.TextEditor | undefined) => {
 		if (e && e.document.languageId === 'fanuc-ls') {
 			setLastProgram(e.document.uri);
+		} else if (e && e.document.languageId === 'fanuc-karel') {
+			lastByLanguage.set('fanuc-karel', e.document.uri);
 		}
 	};
 	track(vscode.window.activeTextEditor);
@@ -109,18 +115,28 @@ class WelderHome implements vscode.WebviewViewProvider {
 		this.view = view;
 		view.webview.options = { enableScripts: true };
 		view.webview.onDidReceiveMessage(async (m: { act: string; arg?: string }) => {
-			if (m.act === 'run' && m.arg) {
-				await vscode.commands.executeCommand(m.arg);
-			} else if (m.act === 'help') {
-				await vscode.env.openExternal(vscode.Uri.parse(WIKI));
-			} else if (m.act === 'simple') {
-				const cfg = vscode.workspace.getConfiguration('fanucLs');
-				await cfg.update('simpleMode', !cfg.get<boolean>('simpleMode', false), vscode.ConfigurationTarget.Global);
+			try {
+				if (m.act === 'run' && m.arg) {
+					await runTile(m.arg);
+				} else if (m.act === 'help') {
+					await vscode.env.openExternal(vscode.Uri.parse(WIKI));
+				} else if (m.act === 'settings') {
+					await vscode.commands.executeCommand('workbench.action.openSettings', '@ext:frontlinenetworks.fanuc-ls');
+				} else if (m.act === 'simple') {
+					const cfg = vscode.workspace.getConfiguration('fanucLs');
+					await cfg.update('simpleMode', !cfg.get<boolean>('simpleMode', false), vscode.ConfigurationTarget.Global);
+				}
+			} catch (err) {
+				vscode.window.showErrorMessage(`Unerwarteter Fehler: ${err instanceof Error ? err.message : String(err)}`);
 			}
-			this.refresh();
 		});
 		view.onDidChangeVisibility(() => this.refresh());
 		this.refresh();
+	}
+
+	/** Nur die Programmanzeige aktualisieren (Suche und aufgeklappte Bereiche bleiben). */
+	programChanged(): void {
+		void this.view?.webview.postMessage({ type: 'program', name: lastProgram ? path.basename(lastProgram.fsPath) : '' });
 	}
 
 	refresh(): void {
@@ -129,27 +145,95 @@ class WelderHome implements vscode.WebviewViewProvider {
 		}
 		const robots = getControllers();
 		const simple = vscode.workspace.getConfiguration('fanucLs').get<boolean>('simpleMode', false);
-		const prog = lastProgram ? path.basename(lastProgram.fsPath) : undefined;
-		const tile = (icon: string, title: string, text: string, command: string) => card(icon, title, text, 'run', command, 'compact');
+		const prog = lastProgram ? path.basename(lastProgram.fsPath) : '';
+		const tile = (act: string, arg: string | undefined, icon: string, label: string, hint: string) =>
+			`<button class="tile" data-act="${act}"${arg ? ` data-arg="${esc(arg)}"` : ''} title="${esc(hint)}"><span class="icon">${icon}</span><span>${esc(label)}</span></button>`;
+		const sections = SECTIONS.map(
+			(sec) =>
+				`<details data-id="${sec.id}"${sec.open ? ' open' : ''}><summary>${esc(sec.title)}</summary><div class="tiles">${sec.tiles
+					.map((t) => tile('run', t.command, t.icon, t.label, t.hint + (t.needs === 'fanuc-ls' ? ' (für das zuletzt bearbeitete Programm)' : t.needs === 'fanuc-karel' ? ' (für die zuletzt bearbeitete KAREL-Datei)' : '')))
+					.join('')}</div></details>`
+		).join('');
+		const view =
+			`<details data-id="view" open><summary>Ansicht & Hilfe</summary><div class="tiles">` +
+			tile('simple', undefined, simple ? '🧰' : '🙈', simple ? 'Experten­ansicht ein' : 'Experten­ansicht aus', simple ? 'Controller-Baum, Sprungmarken, E/A und alle Menüs wieder einblenden' : 'Nur diese Oberfläche anzeigen (einfacher Modus)') +
+			tile('settings', undefined, '⚙️', 'Einstellungen', 'Alle Einstellungen der Extension') +
+			tile('help', undefined, '❓', 'Hilfe', 'Anleitung im Wiki öffnen') +
+			`</div></details>`;
 		const body = `
-			<p class="intro" style="margin-top:8px">Was möchtest du tun?</p>
-			<div class="content">
-				${robots.length === 0 ? message('info', 'Zuerst den Roboter einrichten – danach können Programme geholt und geladen werden.') + tile('🤖', 'Roboter einrichten', 'IP-Adresse eintragen und Verbindung testen', 'fanucLs.welder.setup') : ''}
-				<h2>Roboter</h2>
-				${tile('📥', 'Programm vom Roboter holen', 'Programm auswählen und am PC öffnen', 'fanucLs.welder.download')}
-				${tile('📤', 'Programm auf Roboter laden', 'Wird vorher automatisch geprüft', 'fanucLs.welder.upload')}
-				${tile('💾', 'Sicherung machen', 'Alle Programme auf den PC kopieren', 'fanucLs.welder.backup')}
-				<h2>Programm${prog ? ` <small style="font-weight:normal">· ${esc(prog)}</small>` : ''}</h2>
-				${tile('🔥', 'Schweißgeschwindigkeit ändern', 'Nähte auswählen, neue Geschwindigkeit eingeben', 'fanucLs.welder.speed')}
-				${tile('🪞', 'Programm spiegeln', 'z. B. für das linke/rechte Bauteil', 'fanucLs.welder.mirror')}
-				${tile('✅', 'Programm prüfen', 'Fehler finden, bevor es an den Roboter geht', 'fanucLs.welder.check')}
-				<h2>Einstellungen</h2>
-				${robots.length ? tile('🤖', 'Roboter einrichten', `${robots.length} Roboter eingerichtet: ${esc(robots.map((r) => r.name).join(', '))}`, 'fanucLs.welder.setup') : ''}
-				${card(simple ? '🧰' : '🙈', simple ? 'Expertenansicht einblenden' : 'Expertenansicht ausblenden', simple ? 'Zeigt Controller-Baum, Sprungmarken, E/A und alle Menüs' : 'Nur diese einfache Oberfläche anzeigen', 'simple', undefined, 'compact')}
-				${card('❓', 'Hilfe', 'Anleitung im Wiki öffnen', 'help', undefined, 'compact')}
-			</div>`;
-		this.view.webview.html = htmlDocument('Schweißen', body).replace('<body>', '<body style="padding:0 12px 16px">');
+			<div class="status">📝 <span class="prog">${prog ? esc(prog) : 'kein Programm geöffnet'}</span><br>🤖 ${robots.length ? esc(robots.map((r) => r.name).join(', ')) : 'noch kein Roboter eingerichtet'}</div>
+			${robots.length === 0 ? `<div class="tiles">${tile('run', 'fanucLs.welder.setup', '🤖', 'Roboter einrichten', 'Zuerst den Roboter einrichten')}</div>` : ''}
+			<input class="search" type="search" placeholder="Funktion suchen …">
+			${sections}${view}`;
+		this.view.webview.html = htmlDocument('Schweißen', body, HOME_SCRIPT).replace('<body>', '<body class="home">');
 	}
+}
+
+const HOME_SCRIPT = `
+const st = vscode.getState() || { open: {}, q: '' };
+const q = document.querySelector('input.search');
+document.querySelectorAll('details[data-id]').forEach((d) => {
+	if (d.dataset.id in st.open) d.open = st.open[d.dataset.id];
+	d.addEventListener('toggle', () => {
+		if (q.value.trim()) return;
+		st.open[d.dataset.id] = d.open;
+		vscode.setState(st);
+	});
+});
+function applyFilter() {
+	const v = q.value.toLowerCase().trim();
+	st.q = q.value;
+	vscode.setState(st);
+	document.querySelectorAll('.tile').forEach((t) => {
+		t.style.display = !v || (t.textContent + ' ' + t.title).toLowerCase().includes(v) ? '' : 'none';
+	});
+	document.querySelectorAll('details[data-id]').forEach((d) => {
+		const any = [...d.querySelectorAll('.tile')].some((t) => t.style.display !== 'none');
+		d.style.display = any ? '' : 'none';
+		if (v) d.open = true;
+		else d.open = d.dataset.id in st.open ? st.open[d.dataset.id] : d.hasAttribute('data-default-open');
+	});
+}
+document.querySelectorAll('details[open]').forEach((d) => d.setAttribute('data-default-open', ''));
+q.value = st.q || '';
+q.addEventListener('input', applyFilter);
+if (q.value) applyFilter();
+window.addEventListener('message', (e) => {
+	if (e.data.type === 'program') {
+		document.querySelectorAll('.prog').forEach((el) => (el.textContent = e.data.name || 'kein Programm geöffnet'));
+	}
+});
+document.body.classList.remove('busy');
+`;
+
+/** Kachel ausführen: bei Bedarf vorher das zuletzt bearbeitete Programm in den Vordergrund holen. */
+async function runTile(command: string): Promise<void> {
+	const t = allTiles().find((x) => x.command === command);
+	if (t?.needs) {
+		const uri = lastByLanguage.get(t.needs);
+		if (!uri) {
+			const what = t.needs === 'fanuc-karel' ? 'eine KAREL-Datei (.kl)' : 'ein Programm';
+			const choice = await vscode.window.showWarningMessage(
+				`Dafür muss zuerst ${what} geöffnet sein.`,
+				...(t.needs === 'fanuc-ls' ? ['Programm vom Roboter holen'] : []),
+				'Datei öffnen …'
+			);
+			if (choice === 'Programm vom Roboter holen') {
+				await vscode.commands.executeCommand('fanucLs.welder.download');
+			} else if (choice) {
+				const picked = await vscode.window.showOpenDialog({
+					canSelectMany: false,
+					filters: t.needs === 'fanuc-karel' ? { KAREL: ['kl', 'KL'] } : { 'TP-Programme': ['ls', 'LS'] }
+				});
+				if (picked?.[0]) {
+					await vscode.window.showTextDocument(picked[0], { preview: false });
+				}
+			}
+			return;
+		}
+		await vscode.window.showTextDocument(uri, { preview: false });
+	}
+	await vscode.commands.executeCommand(command);
 }
 
 // --- gemeinsame Schritte -------------------------------------------------------------

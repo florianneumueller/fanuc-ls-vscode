@@ -436,11 +436,24 @@ export function registerLabelFeatures(context: vscode.ExtensionContext): void {
 			return undefined;
 		}
 		const pos = editor.selection.active;
-		const hit = labelAt(analysisOf(editor.document), pos.line, pos.character);
-		if (!hit) {
-			vscode.window.showInformationMessage('Cursor steht nicht auf einer Sprungmarke.');
+		const analysis = analysisOf(editor.document);
+		const hit = labelAt(analysis, pos.line, pos.character);
+		if (hit) {
+			return new LabelNode(editor.document, hit.label);
+		}
+		// Cursor steht nicht auf einer Sprungmarke (z. B. Aufruf aus der Schweißer-Oberfläche): auswählen lassen
+		if (analysis.labels.length === 0) {
+			vscode.window.showInformationMessage('Das Programm enthält keine Sprungmarken.');
 			return undefined;
 		}
-		return new LabelNode(editor.document, hit.label);
+		const picked = await vscode.window.showQuickPick(
+			analysis.labels.map((l) => ({
+				label: l.def?.comment ? `LBL[${l.id}:${l.def.comment}]` : `LBL[${l.id}]`,
+				description: l.def ? `Zeile ${l.def.tpNum}` : 'nicht definiert',
+				info: l
+			})),
+			{ placeHolder: 'Welche Sprungmarke?' }
+		);
+		return picked ? new LabelNode(editor.document, picked.info) : undefined;
 	}
 }

@@ -1,10 +1,33 @@
 # Schweißer-Oberfläche
 
-Für Anwender ohne Programmiererfahrung hat die Extension einen eigenen Seitenreiter: **FANUC Schweißen** (Symbol mit Schweißbrenner links in der Aktivitätsleiste). Alle Aufgaben laufen dort über große Schaltflächen und Assistenten, die Schritt für Schritt durchführen. Befehlspalette, Kontextmenüs und der Programmcode werden dafür nicht gebraucht.
+Für Anwender ohne Programmiererfahrung hat die Extension einen eigenen Seitenreiter: **FANUC Schweißen** (Symbol mit Schweißbrenner links in der Aktivitätsleiste). Dort ist **jede Funktion der Extension** als Kachel erreichbar. Die häufigsten Aufgaben laufen über Assistenten, die Schritt für Schritt durchführen. Befehlspalette, Kontextmenüs und der Programmcode werden dafür nicht gebraucht.
 
 ![Startseite](images/15-schweissen-start.png)
 
-## Aufgaben
+## Aufbau der Startseite
+
+- **Oben** stehen das zuletzt bearbeitete Programm (📝) und die eingerichteten Roboter (🤖).
+- **Funktion suchen …** filtert die Kacheln nach Name und Beschreibung, z. B. „sicher“ findet *Sicherung* und *Gerät sichern*.
+- Die Kacheln sind in **aufklappbare Bereiche** gegliedert. Welche Bereiche offen sind, merkt sich die Seite.
+- **Mit der Maus über einer Kachel** erscheint eine kurze Erklärung.
+- Kacheln, die ein Programm brauchen (z. B. *Sprungmarke einfügen*), arbeiten mit dem **zuletzt bearbeiteten Programm** und holen es dafür nach vorne. Ist noch keins offen, bietet die Seite *Programm vom Roboter holen* oder *Datei öffnen* an.
+- Funktionen, die sonst einen Eintrag im Controller-Baum brauchen (*Datei ansehen*, *Datei löschen*, *Gerät sichern* …), fragen Roboter, Gerät und Datei nacheinander in Auswahllisten ab.
+
+| Bereich | Kacheln |
+|---|---|
+| Häufig | Programm holen, Auf Roboter laden, Geschwindigkeit, Spiegeln, Prüfen, Sicherung (Assistenten) |
+| Programm | Neues Programm, Syntax prüfen, Zeilen nummerieren, LINE_COUNT, Hochladen, Mit Roboter vergleichen, Gruppe spiegeln |
+| Sprungmarken | Einfügen, Alle neu nummerieren, Kommentar ändern, Nummer ändern |
+| Positionen & Achsen | Position anlegen, Gruppe hinzufügen/entfernen, Zusatzachse hinzufügen/entfernen |
+| Ein-/Ausgänge | Vom Roboter importieren, CSV importieren/exportieren, Gültige Bereiche, Status ein/aus, Status entfernen, Neu laden |
+| Roboter & Dateien | Roboter einrichten/bearbeiten/entfernen, Passwort, Datei ansehen/herunterladen/hochladen/löschen, Gerät sichern, Roboterdatei vergleichen, Aktualisieren, FTP-Protokoll |
+| Klon | Klonen/aktualisieren, Änderungen anzeigen, Änderungen übertragen |
+| Argument-Wizard & KAREL | Neue ARGDISP-Datei, Argumente beschreiben, KAREL kompilieren |
+| Ansicht & Hilfe | Expertenansicht ein/aus, Einstellungen, Hilfe |
+
+![Alle Funktionen](images/23-schweissen-alle-funktionen.png)
+
+## Assistenten
 
 | Kachel | Was passiert |
 |---|---|
@@ -21,6 +44,8 @@ Für Anwender ohne Programmiererfahrung hat die Extension einen eigenen Seitenre
 Nach jedem Assistenten schlägt die Abschlussseite die sinnvollen nächsten Schritte vor, z. B. nach dem Holen: *Geschwindigkeit ändern*, *Spiegeln*, *Prüfen*, *Auf Roboter laden*.
 
 ## Schweißgeschwindigkeit ändern
+
+(Kachel *Geschwindigkeit*)
 
 ![Nähte auswählen](images/17-schweissen-naehte.png)
 

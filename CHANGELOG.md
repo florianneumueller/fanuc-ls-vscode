@@ -13,7 +13,13 @@
 - **Programm prüfen:** Übersicht (Zeilen, Nähte, Positionen) und Fehlerliste in verständlicher Form.
 - **Sicherung machen:** Kopiert die Dateien eines Roboters nach `fanuc/Sicherungen/<Roboter>/<Datum>/`.
 - **Roboter einrichten** mit sofortigem Verbindungstest und Hinweisen bei Verbindungsproblemen.
+- **Alle Funktionen als Kacheln:** Die Startseite bietet jeden Befehl der Extension als kompakte Kachel in aufklappbaren Bereichen, mit Suchfeld und Tooltips. Kacheln, die ein Programm brauchen, arbeiten mit dem zuletzt bearbeiteten Programm.
 - **Einfacher Modus** (`fanucLs.simpleMode`): blendet Experten-Seitenreiter und Editor-Menüeinträge aus.
+
+### Verbessert
+
+- *Datei ansehen/herunterladen/löschen*, *Gerät sichern*, *Dateien hochladen* und *Roboterdatei vergleichen* funktionieren jetzt auch ohne Controller-Baum (Auswahl von Roboter, Gerät und Datei).
+- Sprungmarke *Kommentar ändern* / *Nummer ändern*: Steht der Cursor nicht auf einer Marke, erscheint eine Auswahlliste.
 
 ## 0.5.0
 

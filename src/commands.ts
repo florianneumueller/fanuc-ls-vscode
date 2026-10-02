@@ -175,7 +175,8 @@ export function registerCommands(
 		await vscode.window.showTextDocument(doc, { preview: false });
 	});
 
-	reg('fanucLs.downloadDevice', async (node?: DeviceNode | DirNode) => {
+	reg('fanucLs.downloadDevice', async (nodeArg?: DeviceNode | DirNode) => {
+		const node = nodeArg ?? (await pickDeviceNode('Welches Gerät sichern?'));
 		if (!node) {
 			return;
 		}
@@ -207,7 +208,8 @@ export function registerCommands(
 		}
 	});
 
-	reg('fanucLs.uploadToDevice', async (node?: DeviceNode | DirNode) => {
+	reg('fanucLs.uploadToDevice', async (nodeArg?: DeviceNode | DirNode) => {
+		const node = nodeArg ?? (await pickDeviceNode('Wohin laden?'));
 		if (!node) {
 			return;
 		}
@@ -281,7 +283,8 @@ export function registerCommands(
 		await showDiff(target.controller, target.remotePath, localUri.fsPath);
 	});
 
-	reg('fanucLs.compareRemoteWithLocal', async (node?: FileNode) => {
+	reg('fanucLs.compareRemoteWithLocal', async (nodeArg?: FileNode) => {
+		const node = nodeArg ?? (await pickRemoteFile());
 		if (!node) {
 			return;
 		}
@@ -574,11 +577,9 @@ export function registerCommands(
 		return picked?.value;
 	}
 
-	async function pickDevice(controller: ControllerConfig): Promise<string | undefined> {
+	async function pickDevice(controller: ControllerConfig, placeHolder = 'Zielgerät auf der Steuerung'): Promise<string | undefined> {
 		const devices = devicesOf(controller);
-		const picked = await vscode.window.showQuickPick([...devices, '$(edit) Anderer Pfad ...'], {
-			placeHolder: 'Zielgerät auf der Steuerung'
-		});
+		const picked = await vscode.window.showQuickPick([...devices, '$(edit) Anderer Pfad ...'], { placeHolder });
 		if (!picked) {
 			return undefined;
 		}
@@ -588,9 +589,28 @@ export function registerCommands(
 		return picked;
 	}
 
+	async function pickDeviceNode(placeHolder: string): Promise<DeviceNode | undefined> {
+		const controller = await pickController();
+		const device = controller && (await pickDevice(controller, placeHolder));
+		return controller && device ? new DeviceNode(controller, device) : undefined;
+	}
+
+	/** Datei auf der Steuerung auswählen (Controller → Gerät → Datei), z. B. ohne Controller-Baum. */
 	async function pickRemoteFile(): Promise<FileNode | undefined> {
-		vscode.window.showInformationMessage('Bitte die Datei im FANUC-Sidepanel auswählen.');
-		return undefined;
+		const controller = await pickController();
+		const device = controller && (await pickDevice(controller, 'Auf welchem Gerät liegt die Datei?'));
+		if (!controller || !device) {
+			return undefined;
+		}
+		const entries = await withProgress(`Dateiliste von ${device}`, () => ftp.list(controller, secrets, device));
+		const picked = await vscode.window.showQuickPick(
+			entries
+				.filter((e) => !e.isDirectory)
+				.sort((a, b) => a.name.localeCompare(b.name))
+				.map((e) => ({ label: e.name, description: formatModified(e.modified), entry: e })),
+			{ placeHolder: `Datei auf ${controller.name} ${device}`, matchOnDescription: true }
+		);
+		return picked ? new FileNode(controller, ftp.joinRemote(device, picked.entry.name), picked.entry) : undefined;
 	}
 
 	return api;
@@ -712,6 +732,11 @@ function getOrigin(context: vscode.ExtensionContext, localPath: string): Origin 
 
 function normalizeEol(buf: Buffer): string {
 	return buf.toString('latin1').replace(/\r\n/g, '\n');
+}
+
+function formatModified(s?: string): string {
+	const d = s ? new Date(s) : undefined;
+	return !d || isNaN(d.getTime()) ? s ?? '' : d.toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
 }
 
 function sanitize(s: string): string {
