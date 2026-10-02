@@ -38,7 +38,8 @@
     "onLanguage:fanuc-dt",
     "onView:fanucLs.controllers",
     "onView:fanucLs.labels",
-    "onView:fanucLs.io"
+    "onView:fanucLs.io",
+    "onView:fanucLs.welder.home"
   ],
   "contributes": {
     "languages": [
@@ -162,6 +163,11 @@
     "viewsContainers": {
       "activitybar": [
         {
+          "id": "fanucWelder",
+          "title": "FANUC Schweißen",
+          "icon": "resources/welder.svg"
+        },
+        {
           "id": "fanucLs",
           "title": "FANUC",
           "icon": "resources/robot.svg"
@@ -173,17 +179,28 @@
         {
           "id": "fanucLs.controllers",
           "name": "Controller",
-          "contextualTitle": "FANUC Controller"
+          "contextualTitle": "FANUC Controller",
+          "when": "!config.fanucLs.simpleMode"
         },
         {
           "id": "fanucLs.labels",
           "name": "Sprungmarken",
-          "contextualTitle": "FANUC Sprungmarken"
+          "contextualTitle": "FANUC Sprungmarken",
+          "when": "!config.fanucLs.simpleMode"
         },
         {
           "id": "fanucLs.io",
           "name": "E/A",
-          "contextualTitle": "FANUC E/A"
+          "contextualTitle": "FANUC E/A",
+          "when": "!config.fanucLs.simpleMode"
+        }
+      ],
+      "fanucWelder": [
+        {
+          "type": "webview",
+          "id": "fanucLs.welder.home",
+          "name": "Start",
+          "contextualTitle": "FANUC Schweißen"
         }
       ]
     },
@@ -435,6 +452,48 @@
         "title": "Neue ARGDISP-Datei anlegen",
         "category": "FANUC",
         "icon": "$(new-file)"
+      },
+      {
+        "command": "fanucLs.welder.download",
+        "title": "Programm vom Roboter holen",
+        "category": "FANUC Schweißen",
+        "icon": "$(cloud-download)"
+      },
+      {
+        "command": "fanucLs.welder.upload",
+        "title": "Programm auf Roboter laden",
+        "category": "FANUC Schweißen",
+        "icon": "$(cloud-upload)"
+      },
+      {
+        "command": "fanucLs.welder.backup",
+        "title": "Sicherung vom Roboter machen",
+        "category": "FANUC Schweißen",
+        "icon": "$(save-all)"
+      },
+      {
+        "command": "fanucLs.welder.speed",
+        "title": "Schweißgeschwindigkeit ändern",
+        "category": "FANUC Schweißen",
+        "icon": "$(flame)"
+      },
+      {
+        "command": "fanucLs.welder.mirror",
+        "title": "Programm spiegeln (Assistent)",
+        "category": "FANUC Schweißen",
+        "icon": "$(mirror)"
+      },
+      {
+        "command": "fanucLs.welder.check",
+        "title": "Programm prüfen (Assistent)",
+        "category": "FANUC Schweißen",
+        "icon": "$(pass)"
+      },
+      {
+        "command": "fanucLs.welder.setup",
+        "title": "Roboter einrichten",
+        "category": "FANUC Schweißen",
+        "icon": "$(add)"
       }
     ],
     "menus": {
@@ -585,91 +644,96 @@
       "editor/title": [
         {
           "command": "fanucLs.uploadCurrentFile",
-          "when": "resourceLangId == fanuc-ls",
+          "when": "resourceLangId == fanuc-ls && !config.fanucLs.simpleMode",
           "group": "navigation@1"
         },
         {
           "command": "fanucLs.compareWithController",
-          "when": "resourceLangId == fanuc-ls && resourceScheme == file",
+          "when": "resourceLangId == fanuc-ls && resourceScheme == file && !config.fanucLs.simpleMode",
           "group": "navigation@2"
         },
         {
           "command": "fanucLs.karel.compile",
-          "when": "resourceLangId == fanuc-karel",
+          "when": "resourceLangId == fanuc-karel && !config.fanucLs.simpleMode",
           "group": "navigation@1"
         },
         {
           "command": "fanucLs.uploadCurrentFile",
-          "when": "resourceLangId == fanuc-karel",
+          "when": "resourceLangId == fanuc-karel && !config.fanucLs.simpleMode",
           "group": "navigation@2"
         },
         {
           "command": "fanucLs.uploadCurrentFile",
-          "when": "resourceLangId == fanuc-dt",
+          "when": "resourceLangId == fanuc-dt && !config.fanucLs.simpleMode",
+          "group": "navigation@1"
+        },
+        {
+          "command": "fanucLs.welder.upload",
+          "when": "resourceLangId == fanuc-ls && config.fanucLs.simpleMode",
           "group": "navigation@1"
         }
       ],
       "editor/context": [
         {
           "command": "fanucLs.renumber",
-          "when": "resourceLangId == fanuc-ls",
+          "when": "resourceLangId == fanuc-ls && !config.fanucLs.simpleMode",
           "group": "1_modification@10"
         },
         {
           "command": "fanucLs.uploadCurrentFile",
-          "when": "resourceLangId == fanuc-ls",
+          "when": "resourceLangId == fanuc-ls && !config.fanucLs.simpleMode",
           "group": "1_modification@11"
         },
         {
           "command": "fanucLs.compareWithController",
-          "when": "resourceLangId == fanuc-ls && resourceScheme == file",
+          "when": "resourceLangId == fanuc-ls && resourceScheme == file && !config.fanucLs.simpleMode",
           "group": "1_modification@12"
         },
         {
           "command": "fanucLs.labels.insert",
-          "when": "resourceLangId == fanuc-ls",
+          "when": "resourceLangId == fanuc-ls && !config.fanucLs.simpleMode",
           "group": "1_modification@13"
         },
         {
           "submenu": "fanucLs.positionsMenu",
-          "when": "resourceLangId == fanuc-ls",
+          "when": "resourceLangId == fanuc-ls && !config.fanucLs.simpleMode",
           "group": "1_modification@14"
         },
         {
           "command": "fanucLs.io.stripStatus",
-          "when": "resourceLangId == fanuc-ls",
+          "when": "resourceLangId == fanuc-ls && !config.fanucLs.simpleMode",
           "group": "1_modification@15"
         },
         {
           "command": "fanucLs.karel.compile",
-          "when": "resourceLangId == fanuc-karel",
+          "when": "resourceLangId == fanuc-karel && !config.fanucLs.simpleMode",
           "group": "1_modification@10"
         }
       ],
       "explorer/context": [
         {
           "command": "fanucLs.uploadCurrentFile",
-          "when": "resourceLangId == fanuc-ls",
+          "when": "resourceLangId == fanuc-ls && !config.fanucLs.simpleMode",
           "group": "7_transfer@1"
         },
         {
           "command": "fanucLs.compareWithController",
-          "when": "resourceLangId == fanuc-ls",
+          "when": "resourceLangId == fanuc-ls && !config.fanucLs.simpleMode",
           "group": "7_transfer@2"
         },
         {
           "command": "fanucLs.clone.showChanges",
-          "when": "explorerResourceIsFolder",
+          "when": "explorerResourceIsFolder && !config.fanucLs.simpleMode",
           "group": "7_transfer@3"
         },
         {
           "command": "fanucLs.clone.pushChanges",
-          "when": "explorerResourceIsFolder",
+          "when": "explorerResourceIsFolder && !config.fanucLs.simpleMode",
           "group": "7_transfer@4"
         },
         {
           "command": "fanucLs.mirrorGroup",
-          "when": "resourceLangId == fanuc-ls",
+          "when": "resourceLangId == fanuc-ls && !config.fanucLs.simpleMode",
           "group": "7_transfer@5"
         }
       ],
@@ -1041,6 +1105,11 @@
           "type": "string",
           "default": "",
           "markdownDescription": "Zusätzliche Argumente für ktrans, z. B. `/ver V9.30-1` für die Softwareversion der Steuerung oder `/config robot.ini`."
+        },
+        "fanucLs.simpleMode": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Einfacher Modus für Anwender ohne Programmiererfahrung: blendet den Experten-Seitenreiter (Controller-Baum, Sprungmarken, E/A) und die FANUC-Einträge in den Editor-Menüs aus. Alle Aufgaben laufen dann über den Seitenreiter **FANUC Schweißen**."
         }
       }
     },

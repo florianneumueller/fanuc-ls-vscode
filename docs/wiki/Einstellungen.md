@@ -36,6 +36,12 @@
 | `fanucLs.karel.ktransPath` | `""` | Pfad zu `ktrans.exe` aus ROBOGUIDE |
 | `fanucLs.karel.ktransArgs` | `""` | zusätzliche Argumente, z. B. `/ver V9.30-1` |
 
+## Schweißer-Oberfläche
+
+| Einstellung | Standard | Bedeutung |
+|---|---|---|
+| `fanucLs.simpleMode` | `false` | Einfacher Modus: blendet den Experten-Seitenreiter und die FANUC-Einträge in den Editor-Menüs aus, siehe [[Schweißer-Oberfläche]] |
+
 ## Copilot
 
 | Einstellung | Standard | Bedeutung |

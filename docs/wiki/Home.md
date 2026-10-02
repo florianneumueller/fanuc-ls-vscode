@@ -5,6 +5,7 @@ Die Extension macht VS Code zum Editor für FANUC-TP-Programme im ASCII-Listing-
 - **Syntaxhighlighting & Outline**: Abschnitte, Bewegungen, Register, E/A, Schweißbefehle
 - **Syntaxprüfung** beim Tippen, mit Quick Fixes
 - **48 Snippets** und **automatische Zeilennummern** im `/MN`-Block
+- **Schweißer-Oberfläche**: eigener Seitenreiter mit Assistenten für Anwender ohne Programmiererfahrung (Programm holen, Geschwindigkeit ändern, spiegeln, prüfen, laden, sichern)
 - **Controller-Ansicht mit FTP**: Programme direkt von der Robotersteuerung öffnen, sichern und hochladen
 
 ![Übersicht](images/01-syntaxhighlighting.png)
@@ -15,6 +16,7 @@ Die Extension macht VS Code zum Editor für FANUC-TP-Programme im ASCII-Listing-
 |---|---|
 | [[Installation]] | VSIX installieren, aus dem Quellcode bauen |
 | [[Erste Schritte]] | In 5 Minuten vom leeren Ordner zum ersten Programm |
+| [[Schweißer-Oberfläche]] | Seitenreiter *FANUC Schweißen* mit Assistenten, einfacher Modus für Schweißer |
 | [[Syntaxhighlighting und Outline]] | Farben, Gliederung, Faltung |
 | [[Syntaxprüfung]] | Alle Prüfregeln, Quick Fixes, Grenzwerte |
 | [[Sprungmarken]] | Label-Ansicht, Umbenennen, Einfügen, Neu nummerieren |

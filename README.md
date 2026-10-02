@@ -6,6 +6,10 @@ Unterstützung für FANUC-TP-Programme im ASCII-Listing-Format (`.ls`) und KAREL
 
 Alles greift automatisch, sobald eine Datei mit der Endung `.ls` geöffnet wird. Zusätzlich erkennt VS Code auch Dateien ohne passende Endung, wenn die erste Zeile mit `/PROG` beginnt.
 
+### Für Schweißer: Seitenreiter *FANUC Schweißen*
+
+Anwender ohne Programmiererfahrung arbeiten über einen eigenen Seitenreiter mit großen Kacheln und Schritt-für-Schritt-Assistenten: Programm vom Roboter holen, Schweißgeschwindigkeit der Nähte ändern, Programm spiegeln, prüfen, auf den Roboter laden (gesperrt bei Fehlern), Sicherung machen, Roboter einrichten. Mit `fanucLs.simpleMode` lassen sich alle Expertenansichten ausblenden. Details im [Wiki](https://github.com/frontline-networks/fanuc-ls-vscode/wiki/Schwei%C3%9Fer-Oberfl%C3%A4che).
+
 ---
 
 ## Installation

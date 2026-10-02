@@ -29,9 +29,23 @@ import { IoStore, registerIoFeatures } from './io';
 
 const ORIGIN_KEY = 'fanucLs.origins';
 
-interface Origin {
+export interface Origin {
 	controller: string;
 	remotePath: string;
+}
+
+/** Bausteine für die Schweißer-Assistenten. */
+export interface FanucApi {
+	secrets: vscode.SecretStorage;
+	withProgress: typeof withProgress;
+	resolveDownloadDir: typeof resolveDownloadDir;
+	rememberOrigin(localPath: string, origin: Origin): void;
+	originOf(localPath: string): Promise<Origin | undefined>;
+	/** Lädt eine Datei hoch, ohne nochmals nachzufragen. */
+	upload(localPath: string, controller: ControllerConfig, remotePath: string): Promise<void>;
+	/** Prüft ein TP-Programm und liefert alle Meldungen. */
+	check(doc: vscode.TextDocument): Promise<vscode.Diagnostic[]>;
+	refresh(): void;
 }
 
 export function registerCommands(
@@ -41,7 +55,7 @@ export function registerCommands(
 	runValidation: (doc: vscode.TextDocument) => Promise<void>,
 	programIndex: ControllerProgramIndex,
 	ioStore: IoStore
-): void {
+): FanucApi {
 	const secrets = context.secrets;
 	const reg = (id: string, fn: (...args: any[]) => any) =>
 		context.subscriptions.push(vscode.commands.registerCommand(id, fn));
@@ -391,16 +405,35 @@ export function registerCommands(
 
 	// --- Hilfsfunktionen -----------------------------------------------------
 
+	const api: FanucApi = {
+		secrets,
+		withProgress,
+		resolveDownloadDir,
+		rememberOrigin: (local, origin) => rememberOrigin(context, local, origin),
+		originOf: (local) => originOf(context, local),
+		upload: async (local, controller, remotePath) => {
+			await uploadLocalFile(local, controller, undefined, remotePath, false);
+			rememberOrigin(context, local, { controller: controller.name, remotePath });
+			tree.refresh();
+		},
+		check: async (doc) => {
+			await runValidation(doc);
+			return [...(diagnostics.get(doc.uri) ?? [])];
+		},
+		refresh: () => tree.refresh()
+	};
+
 	async function uploadLocalFile(
 		localPath: string,
 		controller: ControllerConfig,
 		remoteDir?: string,
-		remotePathIn?: string
+		remotePathIn?: string,
+		confirm = true
 	): Promise<void> {
 		const remotePath = remotePathIn ?? ftp.joinRemote(remoteDir!, path.basename(localPath));
 		const opts = getFtpOptions();
 
-		if (opts.confirmUpload) {
+		if (opts.confirmUpload && confirm) {
 			const dir = remotePath.replace(/[^/:]*$/, '') || remoteDir || '';
 			let exists = false;
 			try {
@@ -559,6 +592,8 @@ export function registerCommands(
 		vscode.window.showInformationMessage('Bitte die Datei im FANUC-Sidepanel auswählen.');
 		return undefined;
 	}
+
+	return api;
 }
 
 // ---------------------------------------------------------------------------
@@ -621,7 +656,7 @@ async function promptController(current?: ControllerConfig): Promise<ControllerC
 	};
 }
 
-async function resolveDownloadDir(): Promise<string | undefined> {
+export async function resolveDownloadDir(): Promise<string | undefined> {
 	const configured = getFtpOptions().downloadDirectory;
 	if (configured) {
 		return configured;

@@ -3,6 +3,7 @@
 **Benutzung**
 - [[Installation]]
 - [[Erste Schritte]]
+- [[Schweißer-Oberfläche]]
 - [[Syntaxhighlighting und Outline]]
 - [[Syntaxprüfung]]
 - [[Snippets und Zeilennummern]]

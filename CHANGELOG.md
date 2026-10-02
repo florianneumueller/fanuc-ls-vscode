@@ -1,5 +1,20 @@
 # Änderungen
 
+## Unveröffentlicht
+
+**Schweißer-Oberfläche:** ein zweiter Seitenreiter *FANUC Schweißen* mit großen Kacheln und Schritt-für-Schritt-Assistenten. Damit lässt sich die Extension ohne Programmiererfahrung bedienen. Details im [Wiki](https://github.com/frontline-networks/fanuc-ls-vscode/wiki/Schwei%C3%9Fer-Oberfl%C3%A4che).
+
+### Neu
+
+- **Programm vom Roboter holen:** Roboter wählen, Programm suchen und anklicken. Vor dem Ersetzen einer lokalen Kopie fragt der Assistent nach.
+- **Programm auf Roboter laden:** Das Programm wird vorher automatisch geprüft und bei Fehlern **nicht** geladen; die Fehler sind anklickbar. Der Herkunftsroboter wird vorgeschlagen, und der Assistent warnt vor dem Ersetzen eines vorhandenen Programms.
+- **Schweißgeschwindigkeit ändern:** Erkennt die Nähte (`Arc Start` … `Arc End`, auch als Bewegungsoption). Geschwindigkeit auf festen Wert oder um Prozent ändern, mit Vorschau und Plausibilitätswarnung. Anfahrten bleiben unverändert.
+- **Programm spiegeln** als Assistent: Gruppe wählen, *links ↔ rechts* bzw. *vorne ↔ hinten*, Lage der Ebene, Vorschau mit Prüfhinweisen.
+- **Programm prüfen:** Übersicht (Zeilen, Nähte, Positionen) und Fehlerliste in verständlicher Form.
+- **Sicherung machen:** Kopiert die Dateien eines Roboters nach `fanuc/Sicherungen/<Roboter>/<Datum>/`.
+- **Roboter einrichten** mit sofortigem Verbindungstest und Hinweisen bei Verbindungsproblemen.
+- **Einfacher Modus** (`fanucLs.simpleMode`): blendet Experten-Seitenreiter und Editor-Menüeinträge aus.
+
 ## 0.5.0
 
 Unterstützung für den **Argument-Wizard** („Wizard to input arguments“): ARGDISP-Dateien (`.DT`) schreiben und prüfen, und die CALL-Aufrufe in den TP-Programmen dagegen abgleichen. Details im [Wiki](https://github.com/frontline-networks/fanuc-ls-vscode/wiki/Argument-Wizard).

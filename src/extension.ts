@@ -12,6 +12,7 @@ import { registerLabelFeatures } from './labelView';
 import { registerGroupCommands } from './groups';
 import { registerKarelFeatures } from './karel';
 import { registerMirrorCommand } from './mirrorCommand';
+import { registerWelder } from './welder';
 
 const SELECTOR: vscode.DocumentSelector = { language: 'fanuc-ls' };
 
@@ -154,7 +155,11 @@ export function activate(context: vscode.ExtensionContext): void {
 		void runValidation(doc);
 	}
 
-	registerCommands(context, tree, diagnostics, runValidation, programIndex, ioStore);
+	const api = registerCommands(context, tree, diagnostics, runValidation, programIndex, ioStore);
+
+	// --- Schweißer-Oberfläche (zweiter Seitenreiter) ---------------------------
+
+	registerWelder(context, api);
 }
 
 export function deactivate(): void {

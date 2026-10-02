@@ -116,15 +116,14 @@ export function registerMirrorCommand(context: vscode.ExtensionContext): void {
 				return;
 			}
 
-			const { changes, report } = mirrorChanges(text, opts);
-			if (report.mirrored.length === 0) {
+			if (mirrorChanges(text, opts).report.mirrored.length === 0) {
 				vscode.window.showWarningMessage(`In GP${g.group} wurde keine Position gespiegelt.`);
-				showReport(doc, opts, report);
+				showReport(doc, opts, mirrorChanges(text, opts).report);
 				return;
 			}
 
 			if (target.value === 'inplace') {
-				await applyToDocument(doc, changes);
+				const report = await mirrorInPlace(doc, opts);
 				summarize(doc, opts, report, doc.uri);
 				return;
 			}
@@ -137,27 +136,52 @@ export function registerMirrorCommand(context: vscode.ExtensionContext): void {
 			if (!newName) {
 				return;
 			}
-			const upper = newName.toUpperCase();
-			const mirroredText = applyChanges(text, [...changes, ...renameProgramChanges(text, upper, ' gesp.')]);
-			let resultUri: vscode.Uri;
-			if (doc.uri.scheme === 'file') {
-				const ext = path.extname(doc.uri.fsPath) || '.LS';
-				const file = path.join(path.dirname(doc.uri.fsPath), upper + ext);
-				if (await exists(file)) {
-					const go = await vscode.window.showWarningMessage(`${path.basename(file)} existiert bereits. Überschreiben?`, { modal: true }, 'Überschreiben');
-					if (go !== 'Überschreiben') {
-						return;
-					}
+			const file = copyPathFor(doc, newName);
+			if (file && (await exists(file))) {
+				const go = await vscode.window.showWarningMessage(`${path.basename(file)} existiert bereits. Überschreiben?`, { modal: true }, 'Überschreiben');
+				if (go !== 'Überschreiben') {
+					return;
 				}
-				await fs.writeFile(file, mirroredText, 'utf8');
-				resultUri = vscode.Uri.file(file);
-			} else {
-				resultUri = (await vscode.workspace.openTextDocument({ language: 'fanuc-ls', content: mirroredText })).uri;
 			}
-			await vscode.window.showTextDocument(resultUri, { preview: false });
-			summarize(doc, opts, report, resultUri);
+			const result = await writeMirroredCopy(doc, opts, newName);
+			await vscode.window.showTextDocument(result.uri, { preview: false });
+			summarize(doc, opts, result.report, result.uri);
 		})
 	);
+}
+
+/** Zielpfad der gespiegelten Kopie neben dem Original (undefined bei ungespeicherten Dateien). */
+export function copyPathFor(doc: vscode.TextDocument, newName: string): string | undefined {
+	if (doc.uri.scheme !== 'file') {
+		return undefined;
+	}
+	const ext = path.extname(doc.uri.fsPath) || '.LS';
+	return path.join(path.dirname(doc.uri.fsPath), newName.toUpperCase() + ext);
+}
+
+/** Spiegelt die Gruppe direkt im Dokument (rückgängig mit Strg+Z). */
+export async function mirrorInPlace(doc: vscode.TextDocument, opts: MirrorOptions): Promise<MirrorReport> {
+	const { changes, report } = mirrorChanges(doc.getText(), opts);
+	await applyToDocument(doc, changes);
+	return report;
+}
+
+/** Schreibt eine gespiegelte Kopie mit neuem Programmnamen (überschreibt eine vorhandene Datei). */
+export async function writeMirroredCopy(
+	doc: vscode.TextDocument,
+	opts: MirrorOptions,
+	newName: string
+): Promise<{ uri: vscode.Uri; report: MirrorReport }> {
+	const text = doc.getText();
+	const upper = newName.toUpperCase();
+	const { changes, report } = mirrorChanges(text, opts);
+	const mirroredText = applyChanges(text, [...changes, ...renameProgramChanges(text, upper, ' gesp.')]);
+	const file = copyPathFor(doc, upper);
+	if (file) {
+		await fs.writeFile(file, mirroredText, 'utf8');
+		return { uri: vscode.Uri.file(file), report };
+	}
+	return { uri: (await vscode.workspace.openTextDocument({ language: 'fanuc-ls', content: mirroredText })).uri, report };
 }
 
 function parseCenters(v: string, names: string[]): Record<string, number> | undefined {
@@ -190,7 +214,7 @@ async function exists(file: string): Promise<boolean> {
 	}
 }
 
-function describe(opts: MirrorOptions): string {
+export function describe(opts: MirrorOptions): string {
 	const parts: string[] = [];
 	if (opts.plane) {
 		parts.push(`${opts.plane}-Ebene bei ${opts.plane === 'XZ' ? 'Y' : 'X'} = ${opts.offset ?? 0} mm`);
@@ -201,43 +225,52 @@ function describe(opts: MirrorOptions): string {
 	return `GP${opts.group}: ${parts.join('; ')}`;
 }
 
+/** Bericht in verständlichen Sätzen (für Ausgabekanal und Assistent). */
+export function reportLines(opts: MirrorOptions, r: MirrorReport): string[] {
+	const ids = (a: number[]) => a.map((i) => `P[${i}]`).join(', ');
+	const out: string[] = [describe(opts), `Gespiegelt: ${ids(r.mirrored) || 'keine'}`, 'Andere Bewegungsgruppen: unverändert.'];
+	if (r.userFrames.length > 1) {
+		out.push(`ACHTUNG: Positionen in verschiedenen Benutzerkoordinatensystemen (UF ${r.userFrames.join(', ')}) – die Ebene liegt jeweils im UF der Position.`);
+	} else if (r.userFrames.length === 1) {
+		out.push(`Spiegelebene liegt in UF ${r.userFrames[0]}.`);
+	}
+	if (r.incremental.length) {
+		out.push(`Inkrementelle Positionen (INC) ohne Versatz gespiegelt: ${ids(r.incremental)}`);
+	}
+	if (r.withoutGroup.length) {
+		out.push(`Ohne Daten für GP${opts.group}: ${ids(r.withoutGroup)}`);
+	}
+	if (r.jointSkipped.length) {
+		out.push(`In Achswerten gespeichert, NICHT gespiegelt (Ebene gilt nur für kartesische Werte): ${ids(r.jointSkipped)}`);
+	}
+	if (r.cartesianSkipped.length) {
+		out.push(`Kartesisch gespeichert, NICHT gespiegelt: ${ids(r.cartesianSkipped)}`);
+	}
+	if (opts.plane) {
+		out.push('CONFIG (Handgelenk/Ellbogen/Umdrehungen) wurde nicht verändert – am Roboter prüfen.');
+	}
+	out.push(...r.notes);
+	out.push('Alle gespiegelten Positionen vor dem Einsatz in T1 mit reduziertem Override prüfen.');
+	return out;
+}
+
 function showReport(doc: vscode.TextDocument, opts: MirrorOptions, r: MirrorReport, result?: vscode.Uri): void {
 	if (!output) {
 		output = vscode.window.createOutputChannel('FANUC Spiegeln');
 	}
-	const ids = (a: number[]) => a.map((i) => `P[${i}]`).join(', ');
 	output.appendLine(`=== ${path.basename(doc.uri.fsPath)} → ${result ? path.basename(result.fsPath) : '-'}  (${new Date().toLocaleString()})`);
-	output.appendLine(describe(opts));
-	output.appendLine(`Gespiegelt: ${ids(r.mirrored) || 'keine'}`);
-	output.appendLine('Andere Bewegungsgruppen: unverändert.');
-	if (r.userFrames.length > 1) {
-		output.appendLine(`ACHTUNG: Positionen in verschiedenen Benutzerkoordinatensystemen (UF ${r.userFrames.join(', ')}) – die Ebene liegt jeweils im UF der Position.`);
-	} else if (r.userFrames.length === 1) {
-		output.appendLine(`Spiegelebene liegt in UF ${r.userFrames[0]}.`);
-	}
-	if (r.incremental.length) {
-		output.appendLine(`Inkrementelle Positionen (INC) ohne Versatz gespiegelt: ${ids(r.incremental)}`);
-	}
-	if (r.withoutGroup.length) {
-		output.appendLine(`Ohne Daten für GP${opts.group}: ${ids(r.withoutGroup)}`);
-	}
-	if (r.jointSkipped.length) {
-		output.appendLine(`In Achswerten gespeichert, NICHT gespiegelt (Ebene gilt nur für kartesische Werte): ${ids(r.jointSkipped)}`);
-	}
-	if (r.cartesianSkipped.length) {
-		output.appendLine(`Kartesisch gespeichert, NICHT gespiegelt: ${ids(r.cartesianSkipped)}`);
-	}
-	if (opts.plane) {
-		output.appendLine('CONFIG (Handgelenk/Ellbogen/Umdrehungen) wurde nicht verändert – am Roboter prüfen.');
-	}
-	r.notes.forEach((n) => output!.appendLine(n));
-	output.appendLine('Alle gespiegelten Positionen vor dem Einsatz in T1 mit reduziertem Override prüfen.');
+	reportLines(opts, r).forEach((l) => output!.appendLine(l));
 	output.appendLine('');
+}
+
+/** Anzahl der Hinweise, die von Hand geprüft werden sollten. */
+export function warningCount(r: MirrorReport): number {
+	return r.jointSkipped.length + r.cartesianSkipped.length + r.notes.length + (r.userFrames.length > 1 ? 1 : 0);
 }
 
 function summarize(doc: vscode.TextDocument, opts: MirrorOptions, r: MirrorReport, result: vscode.Uri): void {
 	showReport(doc, opts, r, result);
-	const warn = r.jointSkipped.length + r.cartesianSkipped.length + r.notes.length + (r.userFrames.length > 1 ? 1 : 0);
+	const warn = warningCount(r);
 	const msg =
 		`${describe(opts)} – ${r.mirrored.length} Position(en) gespiegelt, andere Gruppen unverändert.` +
 		(warn ? ` ${warn} Hinweis(e) zur Prüfung.` : '');
