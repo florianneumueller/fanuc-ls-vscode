@@ -1,8 +1,8 @@
 # Änderungen
 
-## Unveröffentlicht
+## 0.6.0
 
-**Schweißer-Oberfläche:** ein zweiter Seitenreiter *FANUC Schweißen* mit großen Kacheln und Schritt-für-Schritt-Assistenten. Damit lässt sich die Extension ohne Programmiererfahrung bedienen. Details im [Wiki](https://github.com/frontline-networks/fanuc-ls-vscode/wiki/Schwei%C3%9Fer-Oberfl%C3%A4che).
+**Schweißer-Oberfläche:** ein zweiter Seitenreiter *FANUC Schweißen* mit allen Funktionen als kompakte Kacheln und Schritt-für-Schritt-Assistenten. Damit lässt sich die Extension ohne Programmiererfahrung bedienen. Details im [Wiki](https://github.com/frontline-networks/fanuc-ls-vscode/wiki/Schwei%C3%9Fer-Oberfl%C3%A4che).
 
 ### Neu
 
@@ -20,6 +20,10 @@
 
 - *Datei ansehen/herunterladen/löschen*, *Gerät sichern*, *Dateien hochladen* und *Roboterdatei vergleichen* funktionieren jetzt auch ohne Controller-Baum (Auswahl von Roboter, Gerät und Datei).
 - Sprungmarke *Kommentar ändern* / *Nummer ändern*: Steht der Cursor nicht auf einer Marke, erscheint eine Auswahlliste.
+### Sicherheit
+
+- **basic-ftp auf 6.2.1 aktualisiert** (vorher 5.3.1): behebt [GHSA-c475-qrg2-pj4r](https://github.com/advisories/GHSA-c475-qrg2-pj4r) (hoch). Eine präparierte Verzeichnisliste konnte den Parser in `Client.list()` mit quadratischer Laufzeit blockieren (CPU-DoS).
+- Seit basic-ftp 6 werden Datenverbindungen zu einer anderen IP als der Steuerverbindung abgelehnt (Schutz vor FTP-Bounce). Bei direkt angeschlossenen Steuerungen ändert sich nichts. Liegt NAT oder Portweiterleitung zwischen PC und Roboter, erscheint ein verständlicher Hinweis.
 
 ## 0.5.0
 

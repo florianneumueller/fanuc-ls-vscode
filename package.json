@@ -2,7 +2,7 @@
   "name": "fanuc-ls",
   "displayName": "FANUC TP (LS)",
   "description": "Syntaxhighlighting, Snippets, Syntaxprüfung und FTP-Dateitransfer für FANUC TP-Programme (.ls) und KAREL (.kl)",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "publisher": "frontlinenetworks",
   "license": "MIT",
   "repository": {
@@ -1128,7 +1128,7 @@
     "test": "npm run compile && node --test test/*.test.js"
   },
   "dependencies": {
-    "basic-ftp": "^5.0.5"
+    "basic-ftp": "^6.2.1"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",

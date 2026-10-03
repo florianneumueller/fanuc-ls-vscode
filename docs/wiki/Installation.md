@@ -7,7 +7,7 @@
 
    Alternativ auf der Kommandozeile:
    ```bash
-   code --install-extension fanuc-ls-0.5.0.vsix
+   code --install-extension fanuc-ls-0.6.0.vsix
    ```
 3. VS Code neu laden, wenn es angeboten wird.
 

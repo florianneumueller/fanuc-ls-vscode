@@ -67,8 +67,14 @@ async function withClient<T>(
 			});
 			return await fn(client);
 		} catch (err) {
-			const msg = err instanceof Error ? err.message : String(err);
-			log(`[${controller.name}] Fehler: ${msg}`);
+			const raw = err instanceof Error ? err.message : String(err);
+			log(`[${controller.name}] Fehler: ${raw}`);
+			// basic-ftp ≥ 6 lehnt Datenverbindungen zu einer anderen IP ab (Schutz vor FTP-Bounce)
+			const msg = /PASV returned another host/.test(raw)
+				? `Die Steuerung meldet für die Datenübertragung eine andere IP-Adresse (${/\(([\d.]+)\)/.exec(raw)?.[1] ?? '?'}) als ${controller.host}. ` +
+					'Das passiert meist bei NAT oder Portweiterleitung zwischen PC und Roboter; aus Sicherheitsgründen wird das nicht zugelassen. ' +
+					'Bitte den Roboter direkt über seine eigene IP-Adresse ansprechen.'
+				: raw;
 			throw new FtpError(`${controller.name} (${controller.host}): ${msg}`, err);
 		} finally {
 			client.close();
